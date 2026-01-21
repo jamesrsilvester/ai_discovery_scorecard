@@ -36,6 +36,7 @@ export default function TestLive() {
 
     // Result State
     const [loading, setLoading] = useState(false);
+    const [loadingStep, setLoadingStep] = useState(0);
     const [result, setResult] = useState<ApiResponse | null>(null);
     const [error, setError] = useState<string | null>(null);
 
@@ -56,6 +57,7 @@ export default function TestLive() {
 
     const handleRun = async () => {
         setLoading(true);
+        setLoadingStep(0);
         setError(null);
         setResult(null);
 
@@ -82,8 +84,37 @@ export default function TestLive() {
             setError(err.message);
         } finally {
             setLoading(false);
+            setLoadingStep(0);
         }
     };
+
+    // Animate loading steps
+    useEffect(() => {
+        if (!loading) return;
+        const steps = [
+            { delay: 0 },      // Step 0: Generating queries
+            { delay: 2000 },   // Step 1: Running queries
+            { delay: 4000 },   // Step 2: Query 2
+            { delay: 6000 },   // Step 3: Query 3
+            { delay: 8000 },   // Step 4: Query 4
+            { delay: 10000 },  // Step 5: Query 5
+            { delay: 12000 },  // Step 6: Analyzing
+        ];
+        const timers = steps.map((step, i) =>
+            setTimeout(() => setLoadingStep(i), step.delay)
+        );
+        return () => timers.forEach(t => clearTimeout(t));
+    }, [loading]);
+
+    const loadingSteps = [
+        { label: 'Generating query variations...', icon: '🔍' },
+        { label: 'Running query 1 of 5...', icon: '💬' },
+        { label: 'Running query 2 of 5...', icon: '💬' },
+        { label: 'Running query 3 of 5...', icon: '💬' },
+        { label: 'Running query 4 of 5...', icon: '💬' },
+        { label: 'Running query 5 of 5...', icon: '💬' },
+        { label: 'Analyzing results...', icon: '📊' },
+    ];
 
     return (
         <AppLayout>
@@ -160,6 +191,41 @@ export default function TestLive() {
                     </div>
                 </div>
 
+                {/* Loading State */}
+                {loading && (
+                    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm max-w-4xl animate-in fade-in duration-300">
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="relative">
+                                <Loader2 className="w-10 h-10 text-indigo-600 animate-spin" />
+                            </div>
+                            <div>
+                                <div className="font-semibold text-slate-900 text-lg">
+                                    {loadingSteps[loadingStep]?.icon} {loadingSteps[loadingStep]?.label}
+                                </div>
+                                <div className="text-sm text-slate-500">This typically takes 10-15 seconds</div>
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            {loadingSteps.map((step, i) => (
+                                <div key={i} className="flex items-center gap-3">
+                                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${i < loadingStep ? 'bg-emerald-100 text-emerald-600' :
+                                            i === loadingStep ? 'bg-indigo-100 text-indigo-600 animate-pulse' :
+                                                'bg-slate-100 text-slate-400'
+                                        }`}>
+                                        {i < loadingStep ? <CheckCircle className="w-4 h-4" /> : i + 1}
+                                    </div>
+                                    <span className={`text-sm transition-colors ${i < loadingStep ? 'text-emerald-600' :
+                                            i === loadingStep ? 'text-slate-900 font-medium' :
+                                                'text-slate-400'
+                                        }`}>
+                                        {step.label}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
                 {error && (
                     <div className="p-4 bg-red-50 text-red-700 rounded-lg text-sm flex items-start gap-2 max-w-4xl">
                         <AlertTriangle className="w-5 h-5 shrink-0" />
@@ -226,8 +292,8 @@ export default function TestLive() {
                                                         <span
                                                             key={j}
                                                             className={`px-2 py-0.5 text-xs rounded ${entity === result.targetBrand
-                                                                    ? 'bg-indigo-100 text-indigo-700 font-semibold'
-                                                                    : 'bg-slate-100 text-slate-600'
+                                                                ? 'bg-indigo-100 text-indigo-700 font-semibold'
+                                                                : 'bg-slate-100 text-slate-600'
                                                                 }`}
                                                         >
                                                             {entity}
