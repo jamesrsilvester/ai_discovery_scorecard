@@ -14,7 +14,7 @@ export default function DashboardShell({ children }: { children: ReactNode }) {
                 <div className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0">
                     {/* Breadcrumb / Page Title */}
                     <div className="font-semibold text-lg text-slate-800">
-                        Insights
+                        AI Insights
                     </div>
 
                     {/* Right Actions */}
