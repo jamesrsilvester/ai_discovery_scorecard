@@ -1,17 +1,31 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import {
-    LayoutGrid,
-    Terminal,
-    BarChart2,
-    Puzzle,
-    Activity,
-    FileText,
-    Video,
     Settings,
     ChevronDown,
-    ChevronRight
+    ChevronRight,
+    Sliders,
+    GitMerge,
+    BarChart,
+    Users,
+    CheckCircle,
+    Play,
+    Activity,
+    Shield,
+    Server
 } from 'lucide-react';
 import { useState } from 'react';
+
+// New Type for nav items to handle badges
+type NavItemProps = {
+    icon?: any;
+    label: string;
+    active?: boolean;
+    expanded?: boolean;
+    hasSubmenu?: boolean;
+    onClick?: () => void;
+    badge?: string; // For "NEW" badges
+};
 
 const NavItem = ({
     icon: Icon,
@@ -19,97 +33,107 @@ const NavItem = ({
     active = false,
     expanded = false,
     hasSubmenu = false,
-    onClick
-}: {
-    icon: any,
-    label: string,
-    active?: boolean,
-    expanded?: boolean,
-    hasSubmenu?: boolean,
-    onClick?: () => void
-}) => {
+    onClick,
+    badge
+}: NavItemProps) => {
     return (
         <div
             onClick={onClick}
             className={`
-        flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md cursor-pointer transition-colors
-        ${active ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800'}
+        flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md cursor-pointer transition-colors select-none group
+        ${active ? 'bg-slate-700/50 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800/50'}
       `}
         >
-            <Icon className="w-5 h-5" />
+            {Icon && <Icon className={`w-5 h-5 ${active ? 'text-white' : 'text-slate-400 group-hover:text-white'}`} />}
             <span className="flex-1">{label}</span>
+
+            {badge && (
+                <span className="px-1.5 py-0.5 text-[10px] font-bold text-emerald-900 bg-emerald-200 rounded uppercase tracking-wide">
+                    {badge}
+                </span>
+            )}
+
             {hasSubmenu && (
-                expanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />
+                expanded ? <ChevronDown className="w-4 h-4 ml-2" /> : <ChevronRight className="w-4 h-4 ml-2" />
             )}
         </div>
     );
 };
 
-const SubNavItem = ({ label, active = false }: { label: string, active?: boolean }) => {
-    return (
-        <div className={`
-      px-4 py-2 pl-12 text-sm cursor-pointer transition-colors
-      ${active ? 'text-white font-medium bg-slate-800/50' : 'text-slate-400 hover:text-white'}
-    `}>
-            {label}
-        </div>
-    );
-};
-
 export default function Sidebar() {
-    const [marketingExpanded, setMarketingExpanded] = useState(true);
+    const [internalToolsExpanded, setInternalToolsExpanded] = useState(false);
+    const [settingsExpanded, setSettingsExpanded] = useState(false);
 
     return (
-        <div className="w-64 h-full bg-[#1e293b] flex flex-col border-r border-slate-700"> {/* Dark background matching screenshot */}
+        <div className="w-64 h-full bg-[#1e293b] flex flex-col border-r border-slate-700">
             {/* Brand */}
-            <div className="h-16 flex items-center gap-3 px-6 border-b border-slate-700/50">
-                <div className="w-8 h-8 bg-gradient-to-tr from-emerald-400 to-indigo-500 rounded-lg flex items-center justify-center">
-                    {/* Simple logo shape */}
-                    <div className="w-4 h-4 bg-white rounded-sm opacity-50" />
-                </div>
-                <span className="text-lg font-bold text-white tracking-tight">Freshpaint</span>
+            <div className="h-16 flex items-center gap-3 px-4 shrink-0">
+                <Image
+                    src="/freshpaint-logo.png"
+                    alt="Freshpaint"
+                    width={120}
+                    height={32}
+                    className="object-contain"
+                />
             </div>
 
-            <div className="flex-1 overflow-y-auto py-4 space-y-1">
-                {/* Main Section */}
-                <div className="px-2">
-                    <div className="mb-2 px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                        Main
-                    </div>
-                    <NavItem icon={LayoutGrid} label="Production" hasSubmenu />
+            {/* Account Switcher Mock */}
+            <div className="mx-4 mb-4 px-3 py-2 rounded-lg border border-slate-600 bg-slate-800/50 flex items-center justify-between cursor-pointer hover:bg-slate-800 transition-colors">
+                <div className="flex flex-col min-w-0">
+                    <span className="text-xs text-slate-400 font-medium">Fresh Health</span>
+                    <span className="text-sm text-white font-bold truncate">James</span>
                 </div>
+                <ChevronRight className="w-4 h-4 text-slate-400" />
+            </div>
 
-                <div className="my-4 h-px bg-slate-700/50 mx-4" />
+            <div className="flex-1 overflow-y-auto px-2 space-y-1 py-2 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
+                {/* Setup */}
+                <NavItem icon={Sliders} label="Setup" />
 
-                <div className="px-2 space-y-1">
-                    <NavItem icon={Terminal} label="SDK Setup" hasSubmenu />
+                {/* Events */}
+                <NavItem icon={GitMerge} label="Events" hasSubmenu />
 
+                {/* Integrations */}
+                <NavItem icon={Server} label="Integrations" hasSubmenu />
+
+                {/* Insights */}
+                <NavItem icon={BarChart} label="Insights" hasSubmenu badge="NEW" active={true} expanded={true} />
+
+                {/* Audiences */}
+                <NavItem icon={Users} label="Audiences" hasSubmenu />
+
+                {/* Consent */}
+                <NavItem icon={CheckCircle} label="Consent" hasSubmenu badge="NEW" />
+
+                {/* Video */}
+                <NavItem icon={Play} label="Video" />
+
+                {/* Web Trackers */}
+                <NavItem icon={Activity} label="Web Trackers" />
+
+                {/* Internal Tools */}
+                <div className="pt-4 pb-1">
                     <NavItem
-                        icon={BarChart2}
-                        label="Marketing"
-                        active={true} // Parent active because child is active
+                        icon={Shield}
+                        label="Internal Tools"
                         hasSubmenu
-                        expanded={marketingExpanded}
-                        onClick={() => setMarketingExpanded(!marketingExpanded)}
+                        expanded={internalToolsExpanded}
+                        onClick={() => setInternalToolsExpanded(!internalToolsExpanded)}
                     />
-
-                    {marketingExpanded && (
-                        <div className="space-y-1 mb-2">
-                            <SubNavItem label="Ad Performance" />
-                            <SubNavItem label="Audiences" />
-                            <SubNavItem label="Insights" active={true} />
-                        </div>
-                    )}
-
-                    <NavItem icon={Puzzle} label="Integrations" hasSubmenu />
-                    <NavItem icon={Activity} label="Events" hasSubmenu />
-                    <NavItem icon={FileText} label="Forms" />
-                    <NavItem icon={Video} label="Video" />
-                    <NavItem icon={Settings} label="Settings" hasSubmenu />
                 </div>
-            </div>
 
-            {/* User / Footer area if needed */}
+                {/* WTM Internal */}
+                <NavItem icon={Server} label="WTM Internal" hasSubmenu />
+
+                {/* Settings */}
+                <NavItem
+                    icon={Settings}
+                    label="Settings"
+                    hasSubmenu
+                    expanded={settingsExpanded}
+                    onClick={() => setSettingsExpanded(!settingsExpanded)}
+                />
+            </div>
         </div>
     );
 }
