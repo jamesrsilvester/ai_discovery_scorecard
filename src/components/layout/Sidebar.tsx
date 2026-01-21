@@ -64,14 +64,12 @@ export default function Sidebar() {
     const [internalToolsExpanded, setInternalToolsExpanded] = useState(false);
     const [settingsExpanded, setSettingsExpanded] = useState(false);
 
-    const prefix = process.env.NODE_ENV === 'production' ? '/ai_discovery_scorecard' : '';
-
     return (
         <div className="w-64 h-full bg-[#1e293b] flex flex-col border-r border-slate-700">
             {/* Brand */}
             <div className="h-16 flex items-center gap-3 px-4 shrink-0">
                 <Image
-                    src={`${prefix}/freshpaint-logo.png`}
+                    src="/freshpaint-logo.png"
                     alt="Freshpaint"
                     width={120}
                     height={32}
