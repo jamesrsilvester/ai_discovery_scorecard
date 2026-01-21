@@ -1,13 +1,13 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import AppLayout from '@/components/layout/AppLayout';
-import { TAXONOMY, MARKETS, COMPETITORS, MY_BRAND } from '@/data/mockData';
+import { TAXONOMY, MARKETS, COMPETITORS } from '@/data/mockData';
 import { Play, Loader2, CheckCircle, AlertTriangle } from 'lucide-react';
 
 export default function TestLive() {
     // Selection State
     const [selectedMarket, setSelectedMarket] = useState(MARKETS[0]);
     const [selectedServiceLineId, setSelectedServiceLineId] = useState(TAXONOMY[0].id);
-    const [targetBrand, setTargetBrand] = useState(MY_BRAND);
+    const [targetBrand, setTargetBrand] = useState('');
 
     // Result State
     const [loading, setLoading] = useState(false);
@@ -17,8 +17,15 @@ export default function TestLive() {
     // Derived State
     const competitorsForMarket = useMemo(() => {
         const comps = COMPETITORS[selectedMarket] || [];
-        return [MY_BRAND, ...comps.map(c => c.name)];
+        return comps.map(c => c.name);
     }, [selectedMarket]);
+
+    // Set default brand when market changes
+    useEffect(() => {
+        if (competitorsForMarket.length > 0) {
+            setTargetBrand(competitorsForMarket[0]);
+        }
+    }, [competitorsForMarket]);
 
     const activeServiceLine = TAXONOMY.find(s => s.id === selectedServiceLineId);
 
