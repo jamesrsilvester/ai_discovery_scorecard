@@ -28,6 +28,7 @@ jobs:
         run: |
           mkdir out
           echo '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=https://ai-discovery-scorecard.vercel.app/" /><script>window.location.href = "https://ai-discovery-scorecard.vercel.app" + window.location.search + window.location.hash;</script><title>Redirecting...</title></head><body>Redirecting to <a href="https://ai-discovery-scorecard.vercel.app/">Vercel</a></body></html>' > out/index.html
+          cp out/index.html out/404.html
           touch out/.nojekyll
 
       - name: Upload artifact
