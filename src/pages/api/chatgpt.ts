@@ -32,44 +32,70 @@ async function fetchOpenAICompat(messages: any[], model: string, format: 'text' 
     return data;
 }
 
+interface QueryResult {
+    query: string;
+    rawResponse: string;
+    analysis: {
+        entitiesDetected: string[];
+        firstMentioned: string | null;
+        rank: number | null;
+    };
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== 'POST') {
         return res.status(405).json({ message: 'Method not allowed' });
     }
 
-    const { promptText, market, targetBrand } = req.body;
+    const { serviceLine, market, targetBrand } = req.body;
 
-    if (!promptText) {
-        return res.status(400).json({ message: 'Prompt text is required' });
+    if (!serviceLine || !market) {
+        return res.status(400).json({ message: 'Service line and market are required' });
     }
 
-    const brandName = targetBrand || 'Acme Health';
-
-    // Mock fallback for API quota exceeded or local development
-    if (process.env.NODE_ENV !== 'production' && process.env.MOCK_API === 'true') {
-        return res.status(200).json({
-            success: true,
-            isMock: true,
-            rawResponse: `[MOCK RESPONSE - API QUOTA EXCEEDED]\n\nBased on your search for ${promptText}, Dr. Smith at Banner Health is highly recommended. Other options include Mayo Clinic and Dignity Health. ${brandName} is also a strong contender with excellent patient reviews.`,
-            analysis: {
-                entitiesDetected: ["Banner Health", "Mayo Clinic", "Dignity Health", brandName],
-                firstMentioned: "Banner Health",
-                rank: 4 // Random rank for mock
-            }
-        });
-    }
+    const brandName = targetBrand || 'Banner Health';
 
     try {
-        // Step 1: Simulate the "Search"
-        const searchResult = await fetchOpenAICompat(
-            [{ role: 'user', content: promptText }],
-            'gpt-4o-mini',
-            'text'
-        );
-        const rawResponse = searchResult.choices[0].message.content || '';
+        // Step 1: Generate 5 query variations
+        const variationPrompt = `
+You are a healthcare marketing expert. Generate 5 different search queries that a patient might use when looking for ${serviceLine} services in ${market}.
+The queries should represent diverse patient intents:
+1. A "best provider" query
+2. A "near me" or local query  
+3. A cost/insurance related query
+4. A specific procedure or condition query
+5. A comparison or recommendation query
 
-        // Step 2: The "Analyst"
-        const analysisSystemPrompt = `
+Return a JSON object with key "queries" containing an array of 5 query strings. Keep them realistic and concise.
+`;
+
+        const variationsResult = await fetchOpenAICompat(
+            [{ role: 'user', content: variationPrompt }],
+            'gpt-4o-mini',
+            'json'
+        );
+
+        const variations = JSON.parse(variationsResult.choices[0].message.content || '{"queries":[]}');
+        const queries: string[] = variations.queries || [];
+
+        if (queries.length === 0) {
+            throw new Error("Failed to generate query variations");
+        }
+
+        // Step 2: Run each query and analyze
+        const results: QueryResult[] = [];
+
+        for (const query of queries) {
+            // Get AI response
+            const searchResult = await fetchOpenAICompat(
+                [{ role: 'user', content: query }],
+                'gpt-4o-mini',
+                'text'
+            );
+            const rawResponse = searchResult.choices[0].message.content || '';
+
+            // Analyze response
+            const analysisSystemPrompt = `
 You are a data analyst for '${brandName}'. 
 Analyze the following text which is a response from an AI to a user's health query.
 1. Identify all healthcare providers/brands mentioned.
@@ -78,21 +104,51 @@ Analyze the following text which is a response from an AI to a user's health que
 4. Return a JSON object with keys: entitiesDetected (string[]), firstMentioned (string | null), rank (number | null).
 `;
 
-        const analysisResultRaw = await fetchOpenAICompat(
-            [
-                { role: 'system', content: analysisSystemPrompt },
-                { role: 'user', content: `Analyze this response:\n---\n${rawResponse}\n---` }
-            ],
-            'gpt-4o-mini',
-            'json'
-        );
+            const analysisResultRaw = await fetchOpenAICompat(
+                [
+                    { role: 'system', content: analysisSystemPrompt },
+                    { role: 'user', content: `Analyze this response:\n---\n${rawResponse}\n---` }
+                ],
+                'gpt-4o-mini',
+                'json'
+            );
 
-        const analysisResult = JSON.parse(analysisResultRaw.choices[0].message.content || '{}');
+            const analysis = JSON.parse(analysisResultRaw.choices[0].message.content || '{}');
+
+            results.push({
+                query,
+                rawResponse,
+                analysis
+            });
+        }
+
+        // Step 3: Calculate aggregated metrics
+        const rankedResults = results.filter(r => r.analysis.rank !== null);
+        const mentionCount = rankedResults.length;
+        const avgRank = rankedResults.length > 0
+            ? rankedResults.reduce((sum, r) => sum + (r.analysis.rank || 0), 0) / rankedResults.length
+            : null;
+
+        // Count first mentions
+        const firstMentionCount = results.filter(r => r.analysis.firstMentioned === brandName).length;
+
+        // Unique competitors across all results
+        const allEntities = new Set<string>();
+        results.forEach(r => r.analysis.entitiesDetected?.forEach(e => allEntities.add(e)));
 
         return res.status(200).json({
             success: true,
-            rawResponse,
-            analysis: analysisResult
+            targetBrand: brandName,
+            queries: queries,
+            results,
+            aggregate: {
+                totalQueries: queries.length,
+                mentionCount,   // How many times the brand was mentioned
+                mentionRate: Math.round((mentionCount / queries.length) * 100),
+                avgRank: avgRank ? parseFloat(avgRank.toFixed(1)) : null,
+                firstMentionCount,
+                allCompetitors: Array.from(allEntities).filter(e => e !== brandName)
+            }
         });
 
     } catch (error: any) {

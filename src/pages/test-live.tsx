@@ -1,7 +1,32 @@
 import { useState, useMemo, useEffect } from 'react';
 import AppLayout from '@/components/layout/AppLayout';
 import { TAXONOMY, MARKETS, COMPETITORS } from '@/data/mockData';
-import { Play, Loader2, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Play, Loader2, CheckCircle, AlertTriangle, TrendingUp, Target, Award, Users } from 'lucide-react';
+
+interface QueryResult {
+    query: string;
+    rawResponse: string;
+    analysis: {
+        entitiesDetected: string[];
+        firstMentioned: string | null;
+        rank: number | null;
+    };
+}
+
+interface ApiResponse {
+    success: boolean;
+    targetBrand: string;
+    queries: string[];
+    results: QueryResult[];
+    aggregate: {
+        totalQueries: number;
+        mentionCount: number;
+        mentionRate: number;
+        avgRank: number | null;
+        firstMentionCount: number;
+        allCompetitors: string[];
+    };
+}
 
 export default function TestLive() {
     // Selection State
@@ -11,7 +36,7 @@ export default function TestLive() {
 
     // Result State
     const [loading, setLoading] = useState(false);
-    const [result, setResult] = useState<any>(null);
+    const [result, setResult] = useState<ApiResponse | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     // Derived State
@@ -29,9 +54,6 @@ export default function TestLive() {
 
     const activeServiceLine = TAXONOMY.find(s => s.id === selectedServiceLineId);
 
-    // Dynamic Prompt
-    const generatedPrompt = `Best ${activeServiceLine?.name} in ${selectedMarket}`;
-
     const handleRun = async () => {
         setLoading(true);
         setError(null);
@@ -42,7 +64,7 @@ export default function TestLive() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    promptText: generatedPrompt,
+                    serviceLine: activeServiceLine?.name,
                     market: selectedMarket,
                     targetBrand: targetBrand
                 }),
@@ -68,7 +90,7 @@ export default function TestLive() {
             <div className="space-y-6">
                 <div>
                     <h1 className="text-2xl font-bold text-slate-900">Live Data Test (ChatGPT)</h1>
-                    <p className="text-slate-500">Configure your target query and run a live analysis.</p>
+                    <p className="text-slate-500">Configure your target and run 5 query variations with aggregated results.</p>
                 </div>
 
                 <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm max-w-4xl">
@@ -116,83 +138,136 @@ export default function TestLive() {
                         </div>
                     </div>
 
-                    {/* Preview Box */}
-                    <div className="bg-slate-50 rounded-lg p-4 mb-6 border border-slate-200 flex flex-col md:flex-row gap-4 items-center justify-between">
-                        <div className="flex-1">
-                            <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Generated Query</div>
-                            <div className="font-mono text-slate-700 text-sm">{generatedPrompt}</div>
-                        </div>
+                    {/* Run Button */}
+                    <div className="flex justify-center">
                         <button
                             onClick={handleRun}
-                            disabled={loading}
-                            className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors disabled:opacity-50 flex items-center gap-2 whitespace-nowrap"
+                            disabled={loading || !targetBrand}
+                            className="bg-indigo-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors disabled:opacity-50 flex items-center gap-2"
                         >
-                            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
-                            Run Live Analysis
+                            {loading ? (
+                                <>
+                                    <Loader2 className="w-5 h-5 animate-spin" />
+                                    Running 5 Queries...
+                                </>
+                            ) : (
+                                <>
+                                    <Play className="w-5 h-5" />
+                                    Run Multi-Query Analysis
+                                </>
+                            )}
                         </button>
                     </div>
-
-                    {error && (
-                        <div className="p-4 bg-red-50 text-red-700 rounded-lg text-sm mb-6 flex items-start gap-2">
-                            <AlertTriangle className="w-5 h-5 shrink-0" />
-                            <div>
-                                <p className="font-bold">Error</p>
-                                <p>{error}</p>
-                            </div>
-                        </div>
-                    )}
-
-                    {result && (
-                        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
-                            {/* Mock Warning */}
-                            {result.isMock && (
-                                <div className="p-3 bg-amber-50 text-amber-800 rounded-lg text-sm border border-amber-200">
-                                    <strong>Note:</strong> OpenAI API Quota exceeded. showing mock data for demonstration.
-                                </div>
-                            )}
-
-                            {/* Analysis Card */}
-                            <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                                <h3 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
-                                    <CheckCircle className="w-4 h-4 text-emerald-500" />
-                                    Analysis for {targetBrand}
-                                </h3>
-                                <div className="grid grid-cols-3 gap-4">
-                                    <div className="p-3 bg-white rounded border border-slate-100 shadow-sm">
-                                        <div className="text-xs text-slate-500 uppercase font-bold tracking-wider mb-1">Rank</div>
-                                        <div className="text-2xl font-bold text-indigo-600">
-                                            {result.analysis.rank !== null ? `#${result.analysis.rank}` : 'Not Ranked'}
-                                        </div>
-                                    </div>
-                                    <div className="p-3 bg-white rounded border border-slate-100 shadow-sm col-span-2">
-                                        <div className="text-xs text-slate-500 uppercase font-bold tracking-wider mb-1">First Mentioned</div>
-                                        <div className="text-lg font-medium text-slate-900">
-                                            {result.analysis.firstMentioned || 'None'}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="mt-4">
-                                    <div className="text-xs text-slate-500 uppercase font-bold tracking-wider mb-2">Entities Detected</div>
-                                    <div className="flex flex-wrap gap-2">
-                                        {result.analysis.entitiesDetected?.map((entity: string, i: number) => (
-                                            <span key={i} className={`px-2 py-1 border rounded text-xs font-medium ${entity === targetBrand ? 'bg-indigo-50 border-indigo-200 text-indigo-700' : 'bg-white border-slate-200 text-slate-600'}`}>
-                                                {entity}
-                                            </span>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Raw Response */}
-                            <div>
-                                <h3 className="font-semibold text-slate-900 mb-2">Raw ChatGPT Response</h3>
-                                <div className="bg-slate-900 text-slate-300 p-4 rounded-lg text-sm font-mono whitespace-pre-wrap max-h-96 overflow-y-auto">
-                                    {result.rawResponse}
-                                </div>
-                            </div>
-                        </div>
-                    )}
                 </div>
+
+                {error && (
+                    <div className="p-4 bg-red-50 text-red-700 rounded-lg text-sm flex items-start gap-2 max-w-4xl">
+                        <AlertTriangle className="w-5 h-5 shrink-0" />
+                        <div>
+                            <p className="font-bold">Error</p>
+                            <p>{error}</p>
+                        </div>
+                    </div>
+                )}
+
+                {result && (
+                    <div className="space-y-6 max-w-4xl animate-in fade-in slide-in-from-bottom-2 duration-500">
+                        {/* Aggregate Summary Cards */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                                <div className="flex items-center gap-2 text-slate-500 text-xs font-semibold uppercase tracking-wider mb-1">
+                                    <Target className="w-4 h-4" />
+                                    Mention Rate
+                                </div>
+                                <div className="text-3xl font-bold text-indigo-600">{result.aggregate.mentionRate}%</div>
+                                <div className="text-xs text-slate-400">{result.aggregate.mentionCount} of {result.aggregate.totalQueries} queries</div>
+                            </div>
+                            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                                <div className="flex items-center gap-2 text-slate-500 text-xs font-semibold uppercase tracking-wider mb-1">
+                                    <TrendingUp className="w-4 h-4" />
+                                    Avg Rank
+                                </div>
+                                <div className="text-3xl font-bold text-emerald-600">
+                                    {result.aggregate.avgRank !== null ? `#${result.aggregate.avgRank}` : 'N/A'}
+                                </div>
+                                <div className="text-xs text-slate-400">when mentioned</div>
+                            </div>
+                            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                                <div className="flex items-center gap-2 text-slate-500 text-xs font-semibold uppercase tracking-wider mb-1">
+                                    <Award className="w-4 h-4" />
+                                    First Mentions
+                                </div>
+                                <div className="text-3xl font-bold text-amber-600">{result.aggregate.firstMentionCount}</div>
+                                <div className="text-xs text-slate-400">top recommendation</div>
+                            </div>
+                            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                                <div className="flex items-center gap-2 text-slate-500 text-xs font-semibold uppercase tracking-wider mb-1">
+                                    <Users className="w-4 h-4" />
+                                    Competitors
+                                </div>
+                                <div className="text-3xl font-bold text-slate-700">{result.aggregate.allCompetitors.length}</div>
+                                <div className="text-xs text-slate-400">unique brands found</div>
+                            </div>
+                        </div>
+
+                        {/* Query Results Detail */}
+                        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                            <div className="px-4 py-3 bg-slate-50 border-b border-slate-200">
+                                <h3 className="font-semibold text-slate-900">Query Results for {result.targetBrand}</h3>
+                            </div>
+                            <div className="divide-y divide-slate-100">
+                                {result.results.map((r, i) => (
+                                    <div key={i} className="p-4 hover:bg-slate-50 transition-colors">
+                                        <div className="flex items-start justify-between gap-4">
+                                            <div className="flex-1 min-w-0">
+                                                <div className="text-sm font-medium text-slate-900 mb-1">"{r.query}"</div>
+                                                <div className="flex flex-wrap gap-1">
+                                                    {r.analysis.entitiesDetected?.slice(0, 5).map((entity, j) => (
+                                                        <span
+                                                            key={j}
+                                                            className={`px-2 py-0.5 text-xs rounded ${entity === result.targetBrand
+                                                                    ? 'bg-indigo-100 text-indigo-700 font-semibold'
+                                                                    : 'bg-slate-100 text-slate-600'
+                                                                }`}
+                                                        >
+                                                            {entity}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <div className="text-right shrink-0">
+                                                {r.analysis.rank !== null ? (
+                                                    <div className={`text-lg font-bold ${r.analysis.rank === 1 ? 'text-emerald-600' : 'text-slate-600'}`}>
+                                                        #{r.analysis.rank}
+                                                    </div>
+                                                ) : (
+                                                    <div className="text-sm text-red-500 font-medium">Not Mentioned</div>
+                                                )}
+                                                {r.analysis.firstMentioned === result.targetBrand && (
+                                                    <div className="text-xs text-amber-600 font-semibold">★ First</div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Competitors Found */}
+                        {result.aggregate.allCompetitors.length > 0 && (
+                            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                                <h4 className="text-sm font-semibold text-slate-700 mb-2">Competitors Detected</h4>
+                                <div className="flex flex-wrap gap-2">
+                                    {result.aggregate.allCompetitors.map((comp, i) => (
+                                        <span key={i} className="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-sm">
+                                            {comp}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
         </AppLayout>
     );
