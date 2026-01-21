@@ -5,8 +5,8 @@ const repo = 'ai_discovery_scorecard';
 const nextConfig = {
     reactStrictMode: true,
     swcMinify: true,
-    basePath: isProd ? `/${repo}` : '',
-    assetPrefix: isProd ? `/${repo}/` : '',
+    // basePath: isProd ? `/${repo}` : '',
+    // assetPrefix: isProd ? `/${repo}/` : '',
     images: {
         unoptimized: true,
     },
