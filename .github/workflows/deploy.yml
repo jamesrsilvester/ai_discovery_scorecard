@@ -21,24 +21,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "18" # Node 14 is EOL, upgrading to 18 for build runner (Next 12 works with 18)
-          cache: "npm"
-
       - name: Setup Pages
         uses: actions/configure-pages@v5
-        with:
-          static_site_generator: next
 
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Build and Export
+      - name: Create Redirect
         run: |
-          npm run build
-          npx next export
+          mkdir out
+          echo '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=https://ai-discovery-scorecard.vercel.app/" /><script>window.location.href = "https://ai-discovery-scorecard.vercel.app" + window.location.search + window.location.hash;</script><title>Redirecting...</title></head><body>Redirecting to <a href="https://ai-discovery-scorecard.vercel.app/">Vercel</a></body></html>' > out/index.html
           touch out/.nojekyll
 
       - name: Upload artifact
