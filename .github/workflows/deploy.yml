@@ -39,6 +39,7 @@ jobs:
         run: |
           npm run build
           npx next export
+          touch out/.nojekyll
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
