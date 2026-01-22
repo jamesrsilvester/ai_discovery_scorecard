@@ -58,15 +58,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
         // Step 1: Generate 5 query variations
         const variationPrompt = `
-You are a healthcare marketing expert. Generate 5 different search queries that a patient might use when looking for ${serviceLine} services in ${market}.
-The queries should represent diverse patient intents:
-1. A "best provider" query
-2. A "near me" or local query  
-3. A cost/insurance related query
-4. A specific procedure or condition query
-5. A comparison or recommendation query
+You are a healthcare marketing expert. Generate 5 different search queries that a patient might use when searching for ${serviceLine} providers or specialists in ${market}.
 
-Return a JSON object with key "queries" containing an array of 5 query strings. Keep them realistic and concise.
+All 5 queries should focus on FINDING A PROVIDER - asking "who is the best" or "where can I find" type questions. They should be variations of the same fundamental question (finding a provider), NOT different topics like costs, symptoms, or insurance.
+
+Examples of good variations:
+- "best ${serviceLine.toLowerCase()} doctor in ${market}"
+- "${serviceLine.toLowerCase()} specialists near me ${market}"
+- "top rated ${serviceLine.toLowerCase()} in ${market}"
+- "who is the best ${serviceLine.toLowerCase()} provider in ${market}"
+- "recommended ${serviceLine.toLowerCase()} clinics ${market}"
+
+Return a JSON object with key "queries" containing an array of 5 query strings. Keep them realistic, concise, and all focused on finding a provider.
 `;
 
         const variationsResult = await fetchOpenAICompat(
