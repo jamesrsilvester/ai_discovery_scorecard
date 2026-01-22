@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import AppLayout from '@/components/layout/AppLayout';
 import { TAXONOMY, MARKETS, COMPETITORS } from '@/data/mockData';
-import { Play, Loader2, CheckCircle, AlertTriangle, TrendingUp, Target, Award, Users } from 'lucide-react';
+import { Play, Loader2, CheckCircle, AlertTriangle, TrendingUp, Target, Award, Users, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface QueryResult {
     query: string;
@@ -40,6 +40,7 @@ export default function TestLive() {
     const [tempQueries, setTempQueries] = useState<string[]>([]);
     const [result, setResult] = useState<ApiResponse | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
     // Derived State
     const competitorsForMarket = useMemo(() => {
@@ -329,8 +330,11 @@ export default function TestLive() {
                             </div>
                             <div className="divide-y divide-slate-100">
                                 {result.results.map((r, i) => (
-                                    <div key={i} className="p-4 hover:bg-slate-50 transition-colors">
-                                        <div className="flex items-start justify-between gap-4">
+                                    <div key={i} className="border-b last:border-b-0 border-slate-100">
+                                        <button
+                                            onClick={() => setExpandedIndex(expandedIndex === i ? null : i)}
+                                            className="w-full text-left p-4 hover:bg-slate-50 transition-colors flex items-start justify-between gap-4"
+                                        >
                                             <div className="flex-1 min-w-0">
                                                 <div className="text-sm font-medium text-slate-900 mb-1">"{r.query}"</div>
                                                 <div className="flex flex-wrap gap-1">
@@ -347,19 +351,49 @@ export default function TestLive() {
                                                     ))}
                                                 </div>
                                             </div>
-                                            <div className="text-right shrink-0">
-                                                {r.analysis.rank !== null ? (
-                                                    <div className={`text-lg font-bold ${r.analysis.rank === 1 ? 'text-emerald-600' : 'text-slate-600'}`}>
-                                                        #{r.analysis.rank}
-                                                    </div>
-                                                ) : (
-                                                    <div className="text-sm text-red-500 font-medium">Not Mentioned</div>
-                                                )}
-                                                {r.analysis.firstMentioned === result.targetBrand && (
-                                                    <div className="text-xs text-amber-600 font-semibold">★ First</div>
-                                                )}
+                                            <div className="flex items-center gap-4">
+                                                <div className="text-right shrink-0">
+                                                    {r.analysis.rank !== null ? (
+                                                        <div className={`text-lg font-bold ${r.analysis.rank === 1 ? 'text-emerald-600' : 'text-slate-600'}`}>
+                                                            #{r.analysis.rank}
+                                                        </div>
+                                                    ) : (
+                                                        <div className="text-sm text-red-500 font-medium">Not Mentioned</div>
+                                                    )}
+                                                    {r.analysis.firstMentioned === result.targetBrand && (
+                                                        <div className="text-xs text-amber-600 font-semibold">★ First</div>
+                                                    )}
+                                                </div>
+                                                {expandedIndex === i ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
                                             </div>
-                                        </div>
+                                        </button>
+
+                                        {expandedIndex === i && (
+                                            <div className="px-4 pb-6 bg-slate-50/50 animate-in slide-in-from-top-1 duration-200">
+                                                <div className="bg-white p-4 rounded-lg border border-slate-200 space-y-4 shadow-inner">
+                                                    <div>
+                                                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Full Query</div>
+                                                        <div className="text-sm text-slate-700 italic bg-slate-50 p-2 rounded border border-slate-100">{r.query}</div>
+                                                    </div>
+                                                    <div>
+                                                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">All Detected Brands</div>
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {r.analysis.entitiesDetected.length > 0 ? r.analysis.entitiesDetected.map((brand, idx) => (
+                                                                <span key={idx} className="px-2 py-1 bg-white border border-slate-200 rounded text-xs text-slate-600">
+                                                                    {brand}
+                                                                </span>
+                                                            )) : <span className="text-xs text-slate-400">No brands detected</span>}
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Raw AI Response Excerpt</div>
+                                                        <div className="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap">
+                                                            {r.rawResponse}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 ))}
                             </div>
