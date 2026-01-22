@@ -111,18 +111,21 @@ export default function TestLive() {
         return () => timers.forEach(t => clearTimeout(t));
     }, [loading]);
 
+    const service = activeServiceLine?.name || 'service';
+    const region = selectedMarket;
+
     const loadingSteps = [
-        { label: 'Generating 5 query variations...', icon: '🔍' },
-        { label: 'Asking: "best [service] in [region]"', icon: '💬' },
-        { label: 'Asking: "[service] specialists near me"', icon: '💬' },
-        { label: 'Asking: "top rated [service] doctors"', icon: '💬' },
-        { label: 'Asking: "recommended [service] clinics"', icon: '💬' },
-        { label: 'Asking: "[service] provider reviews"', icon: '💬' },
-        { label: 'Analyzing: "best [service] in [region]"', icon: '📊' },
-        { label: 'Analyzing: "[service] specialists near me"', icon: '📊' },
-        { label: 'Analyzing: "top rated [service] doctors"', icon: '📊' },
-        { label: 'Analyzing: "recommended [service] clinics"', icon: '📊' },
-        { label: 'Analyzing: "[service] provider reviews"', icon: '📊' },
+        { label: `Generating 5 query variations for ${service}...`, icon: '🔍' },
+        { label: `Asking: "best ${service} in ${region}"`, icon: '💬' },
+        { label: `Asking: "${service} specialists near me"`, icon: '💬' },
+        { label: `Asking: "top rated ${service} doctors in ${region}"`, icon: '💬' },
+        { label: `Asking: "recommended ${service} clinics in ${region}"`, icon: '💬' },
+        { label: `Asking: "${service} provider reviews in ${region}"`, icon: '💬' },
+        { label: `Analyzing: "best ${service} in ${region}"`, icon: '📊' },
+        { label: `Analyzing: "${service} specialists near me"`, icon: '📊' },
+        { label: `Analyzing: "top rated ${service} doctors in ${region}"`, icon: '📊' },
+        { label: `Analyzing: "recommended ${service} clinics in ${region}"`, icon: '📊' },
+        { label: `Analyzing: "${service} provider reviews in ${region}"`, icon: '📊' },
         { label: 'Aggregating results...', icon: '✨' },
     ];
 
