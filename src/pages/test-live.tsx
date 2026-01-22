@@ -24,7 +24,7 @@ interface ApiResponse {
         mentionRate: number;
         avgRank: number | null;
         firstMentionCount: number;
-        allCompetitors: string[];
+        allCompetitors: { name: string; count: number }[];
     };
 }
 
@@ -334,13 +334,31 @@ export default function TestLive() {
 
                         {/* Competitors Found */}
                         {result.aggregate.allCompetitors.length > 0 && (
-                            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                                <h4 className="text-sm font-semibold text-slate-700 mb-2">Competitors Detected</h4>
-                                <div className="flex flex-wrap gap-2">
+                            <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                                <h4 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                    <TrendingUp className="w-5 h-5 text-indigo-500" />
+                                    Competitor Share of Voice
+                                </h4>
+                                <div className="space-y-3">
                                     {result.aggregate.allCompetitors.map((comp, i) => (
-                                        <span key={i} className="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-sm">
-                                            {comp}
-                                        </span>
+                                        <div key={i} className="flex items-center gap-4">
+                                            <div className="w-8 font-mono text-sm text-slate-400 font-bold">#{i + 1}</div>
+                                            <div className="flex-1">
+                                                <div className="flex justify-between text-sm mb-1">
+                                                    <span className="font-semibold text-slate-700">{comp.name}</span>
+                                                    <span className="text-slate-500">{Math.round((comp.count / result.aggregate.totalQueries) * 100)}%</span>
+                                                </div>
+                                                <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                                    <div
+                                                        className="bg-indigo-500 h-full rounded-full transition-all duration-1000"
+                                                        style={{ width: `${(comp.count / result.aggregate.totalQueries) * 100}%` }}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="w-24 text-right text-xs font-bold text-slate-400 uppercase tracking-tight">
+                                                {comp.count} / {result.aggregate.totalQueries} mentions
+                                            </div>
+                                        </div>
                                     ))}
                                 </div>
                             </div>

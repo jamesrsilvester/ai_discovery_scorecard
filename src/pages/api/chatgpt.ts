@@ -146,9 +146,19 @@ Analyze the following text which is a response from an AI to a user's health que
         // Count first mentions
         const firstMentionCount = results.filter(r => r.analysis.firstMentioned === brandName).length;
 
-        // Unique competitors across all results
-        const allEntities = new Set<string>();
-        results.forEach(r => r.analysis.entitiesDetected?.forEach(e => allEntities.add(e)));
+        // Count competitor mentions
+        const competitorCounts: Record<string, number> = {};
+        results.forEach(r => {
+            r.analysis.entitiesDetected?.forEach(e => {
+                if (e !== brandName) {
+                    competitorCounts[e] = (competitorCounts[e] || 0) + 1;
+                }
+            });
+        });
+
+        const sortedCompetitors = Object.entries(competitorCounts)
+            .map(([name, count]) => ({ name, count }))
+            .sort((a, b) => b.count - a.count);
 
         return res.status(200).json({
             success: true,
@@ -161,7 +171,7 @@ Analyze the following text which is a response from an AI to a user's health que
                 mentionRate: Math.round((mentionCount / queries.length) * 100),
                 avgRank: avgRank ? parseFloat(avgRank.toFixed(1)) : null,
                 firstMentionCount,
-                allCompetitors: Array.from(allEntities).filter(e => e !== brandName)
+                allCompetitors: sortedCompetitors
             }
         });
 
