@@ -191,7 +191,7 @@ export default function TestLive() {
             <div className="space-y-6">
                 <div>
                     <h1 className="text-2xl font-bold text-slate-900">Live Data Test (ChatGPT)</h1>
-                    <p className="text-slate-500">Simulate real patient behavior with 9 consumer-centric queries (3 keywords x 3 variations).</p>
+                    <p className="text-slate-500">See how patients find your services using common search terms and topics.</p>
                 </div>
 
                 <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm max-w-4xl">
@@ -239,10 +239,9 @@ export default function TestLive() {
                         </div>
                     </div>
 
-                    {/* 4. Keyword Tuning - Dynamic List */}
                     <div className="border-t border-slate-100 pt-6 mb-6">
                         <div className="flex items-center justify-between mb-3">
-                            <label className="block text-sm font-semibold text-slate-700">4. Active Keywords (Selection informs 9-query simulation)</label>
+                            <label className="block text-sm font-semibold text-slate-700">4. Active Keywords (Selected terms will guide the AI analysis)</label>
                             <span className="text-xs text-slate-400 font-medium">{selectedKeywords.length}/5 max</span>
                         </div>
 
@@ -258,9 +257,6 @@ export default function TestLive() {
                                     <X className="w-3.5 h-3.5 opacity-40 group-hover:opacity-100" />
                                 </button>
                             ))}
-                            {selectedKeywords.length === 0 && (
-                                <span className="text-sm text-slate-400 italic py-1 px-2">No custom keywords added. Deferring to AI-generated "likely patient behavior" for this service line.</span>
-                            )}
                         </div>
 
                         <div className="relative">
