@@ -118,11 +118,11 @@ export default function TestLive() {
         { label: 'Asking: "top rated [service] doctors"', icon: '💬' },
         { label: 'Asking: "recommended [service] clinics"', icon: '💬' },
         { label: 'Asking: "[service] provider reviews"', icon: '💬' },
-        { label: 'Analyzing response 1 for brand mentions...', icon: '📊' },
-        { label: 'Analyzing response 2 for brand mentions...', icon: '📊' },
-        { label: 'Analyzing response 3 for brand mentions...', icon: '📊' },
-        { label: 'Analyzing response 4 for brand mentions...', icon: '📊' },
-        { label: 'Analyzing response 5 for brand mentions...', icon: '📊' },
+        { label: 'Analyzing: "best [service] in [region]"', icon: '📊' },
+        { label: 'Analyzing: "[service] specialists near me"', icon: '📊' },
+        { label: 'Analyzing: "top rated [service] doctors"', icon: '📊' },
+        { label: 'Analyzing: "recommended [service] clinics"', icon: '📊' },
+        { label: 'Analyzing: "[service] provider reviews"', icon: '📊' },
         { label: 'Aggregating results...', icon: '✨' },
     ];
 
