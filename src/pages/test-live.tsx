@@ -75,15 +75,11 @@ export default function TestLive() {
             .slice(0, 5); // Limit to top 5 matches
     }, [customKeyword, activeServiceLine, selectedKeywords]);
 
-    // Reset keywords when service line changes to the top 5 default
+    // Start with empty keywords and defer to AI default behavior
     useEffect(() => {
-        if (activeServiceLine) {
-            setSelectedKeywords(activeServiceLine.keywords.slice(0, 5));
-        } else {
-            setSelectedKeywords([]);
-        }
+        setSelectedKeywords([]);
         setCustomKeyword('');
-    }, [selectedServiceLineId, activeServiceLine]);
+    }, [selectedServiceLineId]);
 
     const handleAddKeyword = (kw: string) => {
         if (!kw) return;
@@ -263,7 +259,7 @@ export default function TestLive() {
                                 </button>
                             ))}
                             {selectedKeywords.length === 0 && (
-                                <span className="text-sm text-slate-400 italic py-1">No keywords selected. The AI will generate its own.</span>
+                                <span className="text-sm text-slate-400 italic py-1 px-2">No custom keywords added. Deferring to AI-generated "likely patient behavior" for this service line.</span>
                             )}
                         </div>
 
