@@ -93,12 +93,17 @@ export default function TestLive() {
         if (!loading) return;
         const steps = [
             { delay: 0 },      // Step 0: Generating queries
-            { delay: 2000 },   // Step 1: Running queries
-            { delay: 4000 },   // Step 2: Query 2
-            { delay: 6000 },   // Step 3: Query 3
-            { delay: 8000 },   // Step 4: Query 4
-            { delay: 10000 },  // Step 5: Query 5
-            { delay: 12000 },  // Step 6: Analyzing
+            { delay: 1500 },   // Step 1: Query 1 - asking
+            { delay: 3000 },   // Step 2: Query 2 - asking
+            { delay: 4500 },   // Step 3: Query 3 - asking
+            { delay: 6000 },   // Step 4: Query 4 - asking
+            { delay: 7500 },   // Step 5: Query 5 - asking
+            { delay: 9000 },   // Step 6: Analyzing 1
+            { delay: 10500 },  // Step 7: Analyzing 2
+            { delay: 12000 },  // Step 8: Analyzing 3
+            { delay: 13500 },  // Step 9: Analyzing 4
+            { delay: 15000 },  // Step 10: Analyzing 5
+            { delay: 16500 },  // Step 11: Aggregating
         ];
         const timers = steps.map((step, i) =>
             setTimeout(() => setLoadingStep(i), step.delay)
@@ -107,13 +112,18 @@ export default function TestLive() {
     }, [loading]);
 
     const loadingSteps = [
-        { label: 'Generating query variations...', icon: '🔍' },
-        { label: 'Running query 1 of 5...', icon: '💬' },
-        { label: 'Running query 2 of 5...', icon: '💬' },
-        { label: 'Running query 3 of 5...', icon: '💬' },
-        { label: 'Running query 4 of 5...', icon: '💬' },
-        { label: 'Running query 5 of 5...', icon: '💬' },
-        { label: 'Analyzing results...', icon: '📊' },
+        { label: 'Generating 5 query variations...', icon: '🔍' },
+        { label: 'Asking: "best [service] in [region]"', icon: '💬' },
+        { label: 'Asking: "[service] specialists near me"', icon: '💬' },
+        { label: 'Asking: "top rated [service] doctors"', icon: '💬' },
+        { label: 'Asking: "recommended [service] clinics"', icon: '💬' },
+        { label: 'Asking: "[service] provider reviews"', icon: '💬' },
+        { label: 'Analyzing response 1 for brand mentions...', icon: '📊' },
+        { label: 'Analyzing response 2 for brand mentions...', icon: '📊' },
+        { label: 'Analyzing response 3 for brand mentions...', icon: '📊' },
+        { label: 'Analyzing response 4 for brand mentions...', icon: '📊' },
+        { label: 'Analyzing response 5 for brand mentions...', icon: '📊' },
+        { label: 'Aggregating results...', icon: '✨' },
     ];
 
     return (
