@@ -28,6 +28,51 @@ interface ApiResponse {
     };
 }
 
+const HighlightContent = ({ text, entities, targetBrand }: { text: string; entities: string[]; targetBrand: string }) => {
+    if (!text) return null;
+
+    // Combine entities and target brand to ensure both are highlighted
+    const allTerms = [...entities, targetBrand]
+        .filter(Boolean)
+        .filter((v, i, a) => a.indexOf(v) === i);
+
+    if (!allTerms.length) return <>{text}</>;
+
+    // Sort entities by length descending to avoid partial matches
+    const sortedTerms = allTerms.sort((a, b) => b.length - a.length);
+
+    // Escape for regex and join
+    const escapedTerms = sortedTerms.map(e => e.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    const regex = new RegExp(`(${escapedTerms.join('|')})`, 'gi');
+
+    const parts = text.split(regex);
+
+    return (
+        <>
+            {parts.map((part, i) => {
+                const partLower = part.toLowerCase();
+                const isMatch = sortedTerms.some(t => t.toLowerCase() === partLower);
+                if (isMatch) {
+                    const isTarget = partLower.includes(targetBrand.toLowerCase()) ||
+                        targetBrand.toLowerCase().includes(partLower);
+                    return (
+                        <span
+                            key={i}
+                            className={`px-0.5 rounded font-bold ${isTarget
+                                ? 'bg-indigo-100 text-indigo-700'
+                                : 'bg-slate-100 text-slate-900 border-b-2 border-slate-300'
+                                }`}
+                        >
+                            {part}
+                        </span>
+                    );
+                }
+                return part;
+            })}
+        </>
+    );
+};
+
 export default function TestLive() {
     // Selection State
     const [selectedMarket, setSelectedMarket] = useState(MARKETS[0]);
@@ -484,25 +529,36 @@ export default function TestLive() {
 
                                             {expandedIndex === i && (
                                                 <div className="px-4 pb-6 bg-slate-50/50 animate-in slide-in-from-top-1 duration-200">
-                                                    <div className="bg-white p-4 rounded-lg border border-slate-200 space-y-4 shadow-inner">
-                                                        <div>
-                                                            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Full Query</div>
-                                                            <div className="text-sm text-slate-700 italic bg-slate-50 p-2 rounded border border-slate-100">{r.query}</div>
+                                                    <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
+                                                        <div className="p-4 border-b border-slate-100 bg-slate-50/30">
+                                                            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Patient Intent / Query</div>
+                                                            <div className="text-sm text-slate-800 font-medium italic">"{r.query}"</div>
                                                         </div>
-                                                        <div>
-                                                            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">All Detected Brands</div>
+
+                                                        <div className="p-4 border-b border-slate-100">
+                                                            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Analysis Results</div>
                                                             <div className="flex flex-wrap gap-2">
                                                                 {r.analysis.entitiesDetected.length > 0 ? r.analysis.entitiesDetected.map((brand, idx) => (
-                                                                    <span key={idx} className="px-2 py-1 bg-white border border-slate-200 rounded text-xs text-slate-600">
+                                                                    <div key={idx} className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium border ${brand === result.targetBrand
+                                                                        ? 'bg-indigo-50 border-indigo-200 text-indigo-700'
+                                                                        : 'bg-white border-slate-200 text-slate-600'
+                                                                        }`}>
+                                                                        {brand === result.targetBrand && <Target className="w-3 h-3" />}
                                                                         {brand}
-                                                                    </span>
-                                                                )) : <span className="text-xs text-slate-400">No brands detected</span>}
+                                                                        {r.analysis.firstMentioned === brand && <span className="ml-1 text-[10px] bg-amber-100 text-amber-700 px-1 rounded">#1</span>}
+                                                                    </div>
+                                                                )) : <span className="text-xs text-slate-400 text-center w-full py-2">No brands detected in this response.</span>}
                                                             </div>
                                                         </div>
-                                                        <div>
-                                                            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Raw AI Response Excerpt</div>
-                                                            <div className="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap">
-                                                                {r.rawResponse}
+
+                                                        <div className="p-6">
+                                                            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">Full Evidence Transcript</div>
+                                                            <div className="text-[15px] text-slate-700 leading-relaxed whitespace-pre-wrap font-serif">
+                                                                <HighlightContent
+                                                                    text={r.rawResponse}
+                                                                    entities={r.analysis.entitiesDetected}
+                                                                    targetBrand={result.targetBrand}
+                                                                />
                                                             </div>
                                                         </div>
                                                     </div>
