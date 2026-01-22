@@ -58,7 +58,9 @@ export const TAXONOMY: ServiceLine[] = [
             "vsg surgery", "rny bypass", "minigastric bypass", "medical supervised weight loss",
             "weight loss surgery reviews", "bariatric surgeons directory", "gastric bypass cost",
             "weight loss clinic denver", "bariatric surgery phx", "weight loss programs near me",
-            "best weight loss doctors", "non-surgical fat reduction", "metabolic health clinic"
+            "best weight loss doctors", "non-surgical fat reduction", "metabolic health clinic",
+            "struggling to lose weight", "why can't I lose weight", "weight loss shots", "help with emotional eating",
+            "plus size health", "carrying too much weight", "tiring easily due to weight", "knee pain from weight"
         ]
     },
     {
@@ -81,7 +83,9 @@ export const TAXONOMY: ServiceLine[] = [
             "functional gi disorders", "fecal transplant", "microbiome analysis",
             "bloating and gas treatment", "chronic constipation doctor", "diarrhea specialist",
             "rectal bleeding", "barrett's esophagus", "swallowing disorders specialist",
-            "gallbladder doctor", "gallstones treatment", "gi clinic phoenix", "gi doctor denver"
+            "gallbladder doctor", "gallstones treatment", "gi clinic phoenix", "gi doctor denver",
+            "stomach ache", "bloat", "gas", "funny feeling in stomach", "heartburn", "indigestion",
+            "upset tummy", "irregularity", "poop problems", "tummy trouble", "acid in throat", "burning chest"
         ]
     },
     {
@@ -104,7 +108,10 @@ export const TAXONOMY: ServiceLine[] = [
             "cortisone shot", "physical medicine and rehab", "physiatry", "podiatrist",
             "bunion surgery", "plantar fasciitis treatment", "stress fracture",
             "tennis elbow treatment", "golfer's elbow", "bursitis specialist", "ligament repair",
-            "tendonitis treatment", "orthopedic oncology", "pediatric orthopedics", "concussion clinic"
+            "tendonitis treatment", "orthopedic oncology", "pediatric orthopedics", "concussion clinic",
+            "knee hurts", "stiff joints", "sore back", "sprained ankle", "broken foot", "can't walk on foot",
+            "shoulder pop", "crick in neck", "hip hurts when walking", "swollen knee", "wrist pain typing",
+            "clicking finger", "back pain"
         ]
     },
     {
@@ -126,7 +133,9 @@ export const TAXONOMY: ServiceLine[] = [
             "stroke prevention", "atrial fibrillation ablation", "afib clinic", "holter monitor",
             "cardiac catheterization", "angioplasty", "stent placement", "coronary artery disease",
             "clogged arteries doctor", "high cholesterol specialist", "statin clinic",
-            "cardiovascular screening", "sports cardiology", "ejection fraction improvement"
+            "cardiovascular screening", "sports cardiology", "ejection fraction improvement",
+            "chest tightness", "fluttering heart", "skipping a beat", "out of breath", "legs swelling",
+            "dizzy when standing", "racing heart", "pressure in chest", "tiring quickly", "weakness"
         ]
     },
     {
@@ -148,7 +157,9 @@ export const TAXONOMY: ServiceLine[] = [
             "skin cancer specialist", "pancreatic cancer doctor", "liver cancer specialist",
             "brain tumor center", "neuro-oncology", "gynecologic oncology", "urologic oncology",
             "pediatric oncology", "cancer support services", "integrative oncology",
-            "cancer infusion denver", "oncology specialist phoenix"
+            "cancer infusion denver", "oncology specialist phoenix",
+            "weird mole", "lump in breast", "pain that won't go away", "unexplained weight loss",
+            "night sweats", "always tired", "hard lump", "changing skin spot", "coughing up blood"
         ]
     },
     {
@@ -168,7 +179,9 @@ export const TAXONOMY: ServiceLine[] = [
             "obesity medicine primary care", "smoking cessation", "mental health in primary care",
             "anxiety doctor pcp", "depression treatment pcp", "allergy testing pcp",
             "flu shot clinic", "covid testing", "sports physicals", "camp physicals",
-            "employment physicals", "dot physicals", "immigration physicals"
+            "employment physicals", "dot physicals", "immigration physicals",
+            "bad cold", "pink eye", "rash", "fever", "sore throat", "checkup", "feeling under the weather",
+            "ear ache", "itchy skin", "flu symptoms", "migraine", "headache", "sinus pressure"
         ]
     },
     {
@@ -189,7 +202,9 @@ export const TAXONOMY: ServiceLine[] = [
             "adolescent gynecology", "pediatric gynecology", "menopause hormone therapy",
             "bioidentical hormones", "vulvar disorders", "breast health", "mammogram screening",
             "breast ultrasound", "in vitro fertilization", "ivf center", "egg freezing",
-            "iui treatment", "reproductive endocrinology"
+            "iui treatment", "reproductive endocrinology",
+            "period pain", "cramps", "newly pregnant", "pregnancy test", "missed period",
+            "hot flashes", "night sweats", "yeast infection", "burning when peeing", "lump in chest", "planning a baby"
         ]
     }
 ];
