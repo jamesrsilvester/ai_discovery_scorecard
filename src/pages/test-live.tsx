@@ -37,6 +37,7 @@ export default function TestLive() {
     // Result State
     const [loading, setLoading] = useState(false);
     const [loadingStep, setLoadingStep] = useState(0);
+    const [tempQueries, setTempQueries] = useState<string[]>([]);
     const [result, setResult] = useState<ApiResponse | null>(null);
     const [error, setError] = useState<string | null>(null);
 
@@ -62,13 +63,31 @@ export default function TestLive() {
         setResult(null);
 
         try {
+            // Step 1: Generate Queries first (fast)
+            const genRes = await fetch('/api/chatgpt', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    serviceLine: activeServiceLine?.name,
+                    market: selectedMarket,
+                    targetBrand: targetBrand,
+                    step: 'generate'
+                }),
+            });
+            const genData = await genRes.json();
+            if (genData.success && genData.queries) {
+                setTempQueries(genData.queries);
+            }
+
+            // Step 2: Full Analysis (slow)
             const res = await fetch('/api/chatgpt', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     serviceLine: activeServiceLine?.name,
                     market: selectedMarket,
-                    targetBrand: targetBrand
+                    targetBrand: targetBrand,
+                    queries: genData.queries || [] // Pass back the queries we just generated
                 }),
             });
 
@@ -85,6 +104,7 @@ export default function TestLive() {
         } finally {
             setLoading(false);
             setLoadingStep(0);
+            setTempQueries([]);
         }
     };
 
@@ -103,32 +123,23 @@ export default function TestLive() {
     const service = activeServiceLine?.name || 'service';
     const region = selectedMarket;
 
-    const loadingSteps = [
+    const currentQueries = tempQueries.length > 0 ? tempQueries :
+        (result?.queries.length ? result.queries : Array(9).fill(null));
+
+    const loadingSteps = useMemo(() => [
         { label: `Identifying consumer keywords for ${service}...`, icon: '🔍' },
-        // Keyword 1
-        { label: `Asking variation 1 of consumer keyword 1...`, icon: '💬' },
-        { label: `Asking variation 2 of consumer keyword 1...`, icon: '💬' },
-        { label: `Asking variation 3 of consumer keyword 1...`, icon: '💬' },
-        // Keyword 2
-        { label: `Asking variation 1 of consumer keyword 2...`, icon: '💬' },
-        { label: `Asking variation 2 of consumer keyword 2...`, icon: '💬' },
-        { label: `Asking variation 3 of consumer keyword 2...`, icon: '💬' },
-        // Keyword 3
-        { label: `Asking variation 1 of consumer keyword 3...`, icon: '💬' },
-        { label: `Asking variation 2 of consumer keyword 3...`, icon: '💬' },
-        { label: `Asking variation 3 of consumer keyword 3...`, icon: '💬' },
-        // Analysis
-        { label: `Analyzing responses for keyword 1...`, icon: '📊' },
-        { label: `Analyzing responses for keyword 1...`, icon: '📊' },
-        { label: `Analyzing responses for keyword 1...`, icon: '📊' },
-        { label: `Analyzing responses for keyword 2...`, icon: '📊' },
-        { label: `Analyzing responses for keyword 2...`, icon: '📊' },
-        { label: `Analyzing responses for keyword 2...`, icon: '📊' },
-        { label: `Analyzing responses for keyword 3...`, icon: '📊' },
-        { label: `Analyzing responses for keyword 3...`, icon: '📊' },
-        { label: `Analyzing responses for keyword 3...`, icon: '📊' },
+        // Asking steps
+        ...currentQueries.map((q, i) => ({
+            label: q ? `Asking: "${q}"` : `Asking variation ${i + 1} of consumer keyword...`,
+            icon: '💬'
+        })),
+        // Analysis steps
+        ...currentQueries.map((q, i) => ({
+            label: q ? `Analyzing mentions for: "${q}"` : `Analyzing responses for keyword...`,
+            icon: '📊'
+        })),
         { label: 'Aggregating all 9 results...', icon: '✨' },
-    ];
+    ], [currentQueries, service]);
 
     return (
         <AppLayout showFilters={false}>

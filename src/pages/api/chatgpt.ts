@@ -47,7 +47,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(405).json({ message: 'Method not allowed' });
     }
 
-    const { serviceLine, market, targetBrand } = req.body;
+    const { serviceLine, market, targetBrand, step, queries: providedQueries } = req.body;
 
     if (!serviceLine || !market) {
         return res.status(400).json({ message: 'Service line and market are required' });
@@ -56,8 +56,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const brandName = targetBrand || 'Banner Health';
 
     try {
-        // Step 1: Generate 9 query variations (3 keywords x 3 variations)
-        const variationPrompt = `
+        let queries = providedQueries || [];
+
+        // Step 1: Generate queries if not provided
+        if (queries.length === 0) {
+            const variationPrompt = `
 You are a healthcare marketing expert. For the service line "${serviceLine}" in "${market}", identify 3 distinct "consumer-friendly" keywords or phrases that patients actually use (e.g., instead of "Gastroenterology", they might search for "stomach doctor", "acid reflux", or "colonoscopy").
 
 For EACH of those 3 consumer keywords, generate 3 different search query variations focused on finding a provider/specialist.
@@ -71,17 +74,23 @@ Return a JSON object with:
 Keep all queries focused on provider discovery (e.g., "best [keyword] in [market]", "[keyword] specialist near me", etc.).
 `;
 
-        const variationsResult = await fetchOpenAICompat(
-            [{ role: 'user', content: variationPrompt }],
-            'gpt-4o-mini',
-            'json'
-        );
+            const variationsResult = await fetchOpenAICompat(
+                [{ role: 'user', content: variationPrompt }],
+                'gpt-4o-mini',
+                'json'
+            );
 
-        const variations = JSON.parse(variationsResult.choices[0].message.content || '{"queries":[]}');
-        const queries: string[] = variations.queries || [];
+            const variations = JSON.parse(variationsResult.choices[0].message.content || '{"queries":[]}');
+            queries = variations.queries || [];
 
-        if (queries.length === 0) {
-            throw new Error("Failed to generate query variations");
+            if (queries.length === 0) {
+                throw new Error("Failed to generate query variations");
+            }
+
+            // If only generation was requested, return early
+            if (step === 'generate') {
+                return res.status(200).json({ success: true, queries });
+            }
         }
 
         // Step 2: Run each query and analyze
