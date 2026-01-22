@@ -61,7 +61,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // Step 1: Generate queries if not provided
         if (queries.length === 0) {
             const variationPrompt = `
-You are a healthcare marketing expert. For the service line "${serviceLine}" in "${market}", identify 3 distinct "consumer-friendly" keywords or phrases that patients actually use (e.g., instead of "Gastroenterology", they might search for "stomach doctor", "acid reflux", or "colonoscopy").
+You are a healthcare marketing expert. For the service line "${serviceLine}" in the "${market}" region, identify 3 distinct "consumer-friendly" keywords or phrases that patients actually use (e.g., instead of "Gastroenterology", they might search for "stomach doctor", "acid reflux", or "colonoscopy").
 
 For EACH of those 3 consumer keywords, generate 3 different search query variations focused on finding a provider/specialist.
 
@@ -71,7 +71,10 @@ Return a JSON object with:
 - "keywords": an array of the 3 consumer keywords identified
 - "queries": an array of all 9 query strings (3 variations for each keyword)
 
-Keep all queries focused on provider discovery (e.g., "best [keyword] in [market]", "[keyword] specialist near me", etc.).
+CRITICAL INSTRUCTIONS:
+1. EVERY query must explicitly include the location "${market}" (e.g., "stomach doctor in ${market}", "best acid reflux clinic ${market}").
+2. DO NOT use the phrases "near me", "nearby", or "local" as the AI simulation requires explicit geographic context to return relevant results.
+3. Ensure all queries are focused on provider discovery.
 `;
 
             const variationsResult = await fetchOpenAICompat(
