@@ -114,7 +114,7 @@ export default function TestLive() {
         if (!loading) return;
         // 24 steps total: 1 (Gen) + 9 (Ask) + 9 (Analyze) + 5 (Detailed Aggregation)
         const stepCount = 24;
-        const interval = 1200; // 1.2s per step
+        const interval = 3600; // 3.6s per step
         const timers = Array.from({ length: stepCount }).map((_, i) =>
             setTimeout(() => setLoadingStep(i), i * interval)
         );
@@ -209,7 +209,7 @@ export default function TestLive() {
                             {loading ? (
                                 <>
                                     <Loader2 className="w-5 h-5 animate-spin" />
-                                    Running 5 Queries...
+                                    Running 9 Queries...
                                 </>
                             ) : (
                                 <>
@@ -231,12 +231,8 @@ export default function TestLive() {
                                 <div className="font-semibold text-slate-900 text-lg">
                                     {loadingSteps[loadingStep]?.icon} {loadingSteps[loadingStep]?.label}
                                 </div>
-                                {result ? (
+                                {result && (
                                     <div className="text-sm text-emerald-600 font-medium">Analysis Complete</div>
-                                ) : (
-                                    <div className="text-sm text-slate-500 font-mono">
-                                        Estimated {Math.ceil((loadingSteps.length - loadingStep) * 1.2)}s remaining
-                                    </div>
                                 )}
                             </div>
                         </div>
