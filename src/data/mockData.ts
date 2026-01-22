@@ -50,6 +50,26 @@ export const TAXONOMY: ServiceLine[] = [
         id: "ortho",
         name: "Orthopedics & Sports Medicine",
         subLines: ["Sports Medicine", "Joint Replacement", "Spine", "Hand & Upper Extremity", "Foot & Ankle"]
+    },
+    {
+        id: "cardio",
+        name: "Cardiovascular & Heart",
+        subLines: ["General Cardiology", "Interventional Cardiology", "Heart Failure", "Vascular Surgery"]
+    },
+    {
+        id: "oncology",
+        name: "Oncology & Cancer Center",
+        subLines: ["Medical Oncology", "Radiation Oncology", "Surgical Oncology", "Breast Cancer", "Lung Cancer"]
+    },
+    {
+        id: "primary",
+        name: "Primary Care & Family Medicine",
+        subLines: ["Adult Medicine", "Pediatrics", "Internal Medicine", "Wellness Exams"]
+    },
+    {
+        id: "womens",
+        name: "Women's Health & OBGYN",
+        subLines: ["Obstetrics", "Gynecology", "Maternal Fetal Medicine", "Pregnancy Care"]
     }
 ];
 
@@ -60,12 +80,18 @@ export const COMPETITORS: Record<Market, Competitor[]> = {
     Phoenix: [
         { id: "banner", name: "Banner Health", color: "#005EB8" },
         { id: "honor", name: "HonorHealth", color: "#63479B" },
-        { id: "dignity", name: "Dignity Health", color: "#F58025" }
+        { id: "dignity", name: "Dignity Health", color: "#F58025" },
+        { id: "mayo", name: "Mayo Clinic", color: "#BB133E" },
+        { id: "abrazo", name: "Abrazo Health", color: "#003A70" },
+        { id: "phx-childrens", name: "Phoenix Children's", color: "#00A9E0" }
     ],
     Denver: [
         { id: "uchealth", name: "UCHealth", color: "#C21B2F" },
         { id: "healthone", name: "HealthONE", color: "#009CA6" },
-        { id: "scl", name: "Intermountain (SCL)", color: "#0057B8" }
+        { id: "scl", name: "Intermountain (SCL)", color: "#0057B8" },
+        { id: "denver-health", name: "Denver Health", color: "#7B6129" },
+        { id: "bch", name: "Boulder Community Health", color: "#0072CE" },
+        { id: "childrens-co", name: "Children's Hospital Colorado", color: "#E35205" }
     ]
 };
 
@@ -87,6 +113,18 @@ export const PROMPTS: Prompt[] = [
     // Ortho - Phoenix
     { id: "p8", text: "knee replacement surgeon phoenix", theme: "Joint Replacement", serviceLineId: "ortho", intentType: "High-intent", market: "Phoenix" },
     { id: "p9", text: "orthopedic urgent care scottsdale", theme: "Urgent Ortho", serviceLineId: "ortho", intentType: "Local", market: "Phoenix" },
+
+    // Cardio - Phoenix
+    { id: "p12", text: "best cardiologist in Phoenix", theme: "Best Doctor", serviceLineId: "cardio", intentType: "High-intent", market: "Phoenix" },
+    { id: "p13", text: "heart clinic Scottsdale", theme: "Local Clinic", serviceLineId: "cardio", intentType: "Local", market: "Phoenix" },
+
+    // Oncology - Denver
+    { id: "p14", text: "top oncologist in Denver", theme: "Best Doctor", serviceLineId: "oncology", intentType: "High-intent", market: "Denver" },
+    { id: "p15", text: "cancer treatment centers Denver reviews", theme: "Centers reviews", serviceLineId: "oncology", intentType: "Info", market: "Denver" },
+
+    // Primary/Womens - Denver
+    { id: "p16", text: "primary care physician denver", theme: "PCP", serviceLineId: "primary", intentType: "Local", market: "Denver" },
+    { id: "p17", text: "best obgyn in denver for pregnancy", theme: "OBGYN", serviceLineId: "womens", intentType: "High-intent", market: "Denver" },
 
     // Denver Samples
     { id: "p10", text: "best bariatric surgeon in Denver", theme: "Best Surgeon", serviceLineId: "bariatrics", intentType: "High-intent", market: "Denver" },
