@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import AppLayout from '@/components/layout/AppLayout';
 import { TAXONOMY, MARKETS, COMPETITORS } from '@/data/mockData';
-import { Play, Loader2, CheckCircle, AlertTriangle, TrendingUp, Target, Award, Users, ChevronDown, ChevronUp } from 'lucide-react';
+import { Play, Loader2, ChevronDown, ChevronUp, X, Plus, Minus, CheckCircle, AlertTriangle, TrendingUp, Target, Award, Users } from 'lucide-react';
 
 interface QueryResult {
     query: string;
@@ -75,11 +75,28 @@ export default function TestLive() {
             .slice(0, 5); // Limit to top 5 matches
     }, [customKeyword, activeServiceLine, selectedKeywords]);
 
-    // Reset keywords when service line changes
+    // Reset keywords when service line changes to the top 5 default
     useEffect(() => {
-        setSelectedKeywords([]);
+        if (activeServiceLine) {
+            setSelectedKeywords(activeServiceLine.keywords.slice(0, 5));
+        } else {
+            setSelectedKeywords([]);
+        }
         setCustomKeyword('');
-    }, [selectedServiceLineId]);
+    }, [selectedServiceLineId, activeServiceLine]);
+
+    const handleAddKeyword = (kw: string) => {
+        if (!kw) return;
+        const normalized = kw.trim();
+        if (normalized && !selectedKeywords.includes(normalized) && selectedKeywords.length < 5) {
+            setSelectedKeywords([...selectedKeywords, normalized]);
+            setCustomKeyword('');
+        }
+    };
+
+    const handleRemoveKeyword = (kw: string) => {
+        setSelectedKeywords(selectedKeywords.filter(k => k !== kw));
+    };
 
     const handleRun = async () => {
         setLoading(true);
@@ -89,7 +106,7 @@ export default function TestLive() {
 
         try {
             // Step 1: Generate Queries first (fast)
-            const userKeywords = [...selectedKeywords, ...(customKeyword ? [customKeyword] : [])];
+            const userKeywords = selectedKeywords;
 
             const genRes = await fetch('/api/chatgpt', {
                 method: 'POST',
@@ -226,65 +243,70 @@ export default function TestLive() {
                         </div>
                     </div>
 
-                    {/* 4. Keyword Tuning Grid */}
+                    {/* 4. Keyword Tuning - Dynamic List */}
                     <div className="border-t border-slate-100 pt-6 mb-6">
                         <div className="flex items-center justify-between mb-3">
-                            <label className="block text-sm font-semibold text-slate-700">4. Tune Keywords (Optional - select up to 5)</label>
-                            <span className="text-xs text-slate-400 font-medium">{selectedKeywords.length}/5 selected</span>
+                            <label className="block text-sm font-semibold text-slate-700">4. Active Keywords (Selection informs 9-query simulation)</label>
+                            <span className="text-xs text-slate-400 font-medium">{selectedKeywords.length}/5 max</span>
                         </div>
 
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 mb-4">
-                            {activeServiceLine?.keywords.map((kw) => {
-                                const isSelected = selectedKeywords.includes(kw);
-                                return (
-                                    <button
-                                        key={kw}
-                                        onClick={() => {
-                                            if (isSelected) {
-                                                setSelectedKeywords(selectedKeywords.filter(k => k !== kw));
-                                            } else if (selectedKeywords.length < 5) {
-                                                setSelectedKeywords([...selectedKeywords, kw]);
-                                            }
-                                        }}
-                                        className={`px-3 py-2 rounded-lg text-xs font-medium transition-all border ${isSelected
-                                            ? 'bg-indigo-50 border-indigo-200 text-indigo-700 shadow-sm'
-                                            : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50'
-                                            }`}
-                                    >
-                                        {kw}
-                                    </button>
-                                );
-                            })}
+                        {/* Selected Keywords Chips */}
+                        <div className="flex flex-wrap gap-2 mb-4 min-h-[40px] p-2 bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+                            {selectedKeywords.map((kw) => (
+                                <button
+                                    key={kw}
+                                    onClick={() => handleRemoveKeyword(kw)}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-indigo-100 text-indigo-700 rounded-full text-sm font-medium hover:bg-red-50 hover:text-red-600 hover:border-red-100 transition-all group"
+                                >
+                                    {kw}
+                                    <X className="w-3.5 h-3.5 opacity-40 group-hover:opacity-100" />
+                                </button>
+                            ))}
+                            {selectedKeywords.length === 0 && (
+                                <span className="text-sm text-slate-400 italic py-1">No keywords selected. The AI will generate its own.</span>
+                            )}
                         </div>
 
                         <div className="relative">
-                            <input
-                                type="text"
-                                placeholder="Add custom keyword..."
-                                value={customKeyword}
-                                onChange={(e) => setCustomKeyword(e.target.value)}
-                                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
-                            />
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    placeholder="Search or add custom keyword..."
+                                    value={customKeyword}
+                                    onChange={(e) => setCustomKeyword(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            handleAddKeyword(customKeyword);
+                                        }
+                                    }}
+                                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                                />
+                                <button
+                                    onClick={() => handleAddKeyword(customKeyword)}
+                                    disabled={!customKeyword.trim() || selectedKeywords.length >= 5}
+                                    className="p-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-30"
+                                >
+                                    <Plus className="w-5 h-5" />
+                                </button>
+                            </div>
 
                             {/* Smart Lookup Suggestions */}
-                            {suggestions.length > 0 && (
-                                <div className="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg overflow-hidden animate-in fade-in slide-in-from-top-1 duration-200">
+                            {suggestions.length > 0 && selectedKeywords.length < 5 && (
+                                <div className="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-1 duration-200">
                                     <div className="px-3 py-1.5 bg-slate-50 border-b border-slate-100 text-[10px] uppercase tracking-wider font-bold text-slate-400">
-                                        Matching Keywords
+                                        Suggested Additions
                                     </div>
                                     {suggestions.map((suggestion) => (
                                         <button
                                             key={suggestion}
-                                            onClick={() => {
-                                                if (selectedKeywords.length < 5) {
-                                                    setSelectedKeywords([...selectedKeywords, suggestion]);
-                                                    setCustomKeyword('');
-                                                }
-                                            }}
+                                            onClick={() => handleAddKeyword(suggestion)}
                                             className="w-full px-3 py-2 text-left text-sm text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 transition-colors flex items-center justify-between group"
                                         >
                                             <span>{suggestion}</span>
-                                            <span className="text-[10px] text-slate-400 group-hover:text-indigo-400">Match in {activeServiceLine?.name}</span>
+                                            <span className="text-[10px] text-slate-400 group-hover:text-indigo-400 flex items-center gap-1">
+                                                <Plus className="w-2.5 h-2.5" /> Add to list
+                                            </span>
                                         </button>
                                     ))}
                                 </div>
