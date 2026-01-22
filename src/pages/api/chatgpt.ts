@@ -101,9 +101,20 @@ Return a JSON object with key "queries" containing an array of 5 query strings. 
             const analysisSystemPrompt = `
 You are a data analyst for '${brandName}'. 
 Analyze the following text which is a response from an AI to a user's health query.
-1. Identify all healthcare providers/brands mentioned.
-2. Determine if '${brandName}' is mentioned.
-3. If '${brandName}' is mentioned, what is its rank order? (1 = first mentioned or most recommended). If not mentioned, rank is null.
+
+1. Identify healthcare ORGANIZATIONS mentioned. Only include:
+   - Health systems (e.g., "UCHealth", "Kaiser Permanente", "HCA Healthcare")
+   - Hospitals (e.g., "Denver Health Medical Center", "University of Colorado Hospital")
+   - Medical groups/clinics (e.g., "The Steadman Clinic", "OrthoColorado")
+   
+   DO NOT include:
+   - Individual doctor names (e.g., "Dr. Robert Smith")
+   - Review websites (e.g., "Healthgrades", "Zocdoc", "Vitals", "Yelp")
+   - Professional associations (e.g., "American Academy of Orthopaedic Surgeons")
+   - General websites or search engines
+
+2. Determine if '${brandName}' (or a close variation) is mentioned.
+3. If '${brandName}' is mentioned, what is its rank order among the organizations? (1 = first mentioned or most recommended). If not mentioned, rank is null.
 4. Return a JSON object with keys: entitiesDetected (string[]), firstMentioned (string | null), rank (number | null).
 `;
 
