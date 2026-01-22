@@ -139,11 +139,11 @@ export default function TestLive() {
             label: q ? `Analyzing mentions for: "${q}"` : `Analyzing responses for keyword...`,
             icon: '📊'
         })),
-        { label: 'Aggregating all 9 results...', icon: '✨' },
-        { label: 'Calculating market share & sentiment...', icon: '📈' },
-        { label: 'Deep-linking detected mentions...', icon: '🔗' },
-        { label: 'Generating discoverability scorecard...', icon: '📋' },
-        { label: 'Finalizing visualizations...', icon: '🎨' },
+        { label: 'Extracting insights from 9 datasets...', icon: '🧠' },
+        { label: 'Calculating competitive SOV benchmarks...', icon: '📊' },
+        { label: 'Mapping discovery proof points...', icon: '📍' },
+        { label: 'Generating live discovery scorecard...', icon: '✨' },
+        { label: 'Rendering comparative analysis charts...', icon: '🎨' },
     ], [currentQueries, service]);
 
     return (
