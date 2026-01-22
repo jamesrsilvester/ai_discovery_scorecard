@@ -61,6 +61,16 @@ export default function TestLive() {
 
     const activeServiceLine = TAXONOMY.find(s => s.id === selectedServiceLineId);
 
+    // Smart Lookup Suggestions
+    const suggestions = useMemo(() => {
+        if (!customKeyword || !activeServiceLine) return [];
+        const term = customKeyword.toLowerCase();
+        return activeServiceLine.keywords
+            .filter(kw => kw.toLowerCase().includes(term))
+            .filter(kw => !selectedKeywords.includes(kw))
+            .slice(0, 5); // Limit to top 5 matches
+    }, [customKeyword, activeServiceLine, selectedKeywords]);
+
     // Reset keywords when service line changes
     useEffect(() => {
         setSelectedKeywords([]);
@@ -183,23 +193,9 @@ export default function TestLive() {
                             </select>
                         </div>
 
-                        {/* 2. Service Line Selection */}
+                        {/* 2. Target Brand Selection */}
                         <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-2">2. Service Line</label>
-                            <select
-                                value={selectedServiceLineId}
-                                onChange={(e) => setSelectedServiceLineId(e.target.value)}
-                                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm"
-                            >
-                                {TAXONOMY.map(s => (
-                                    <option key={s.id} value={s.id}>{s.name}</option>
-                                ))}
-                            </select>
-                        </div>
-
-                        {/* 3. Target Brand Selection */}
-                        <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-2">3. Your Healthcare System</label>
+                            <label className="block text-sm font-semibold text-slate-700 mb-2">2. Your Healthcare System</label>
                             <select
                                 value={targetBrand}
                                 onChange={(e) => setTargetBrand(e.target.value)}
@@ -207,6 +203,20 @@ export default function TestLive() {
                             >
                                 {competitorsForMarket.map(brand => (
                                     <option key={brand} value={brand}>{brand}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* 3. Service Line Selection */}
+                        <div>
+                            <label className="block text-sm font-semibold text-slate-700 mb-2">3. Service Line</label>
+                            <select
+                                value={selectedServiceLineId}
+                                onChange={(e) => setSelectedServiceLineId(e.target.value)}
+                                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm"
+                            >
+                                {TAXONOMY.map(s => (
+                                    <option key={s.id} value={s.id}>{s.name}</option>
                                 ))}
                             </select>
                         </div>
@@ -243,14 +253,38 @@ export default function TestLive() {
                             })}
                         </div>
 
-                        <div className="flex gap-2">
+                        <div className="relative">
                             <input
                                 type="text"
                                 placeholder="Add custom keyword..."
                                 value={customKeyword}
                                 onChange={(e) => setCustomKeyword(e.target.value)}
-                                className="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
                             />
+
+                            {/* Smart Lookup Suggestions */}
+                            {suggestions.length > 0 && (
+                                <div className="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg overflow-hidden animate-in fade-in slide-in-from-top-1 duration-200">
+                                    <div className="px-3 py-1.5 bg-slate-50 border-b border-slate-100 text-[10px] uppercase tracking-wider font-bold text-slate-400">
+                                        Matching Keywords
+                                    </div>
+                                    {suggestions.map((suggestion) => (
+                                        <button
+                                            key={suggestion}
+                                            onClick={() => {
+                                                if (selectedKeywords.length < 5) {
+                                                    setSelectedKeywords([...selectedKeywords, suggestion]);
+                                                    setCustomKeyword('');
+                                                }
+                                            }}
+                                            className="w-full px-3 py-2 text-left text-sm text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 transition-colors flex items-center justify-between group"
+                                        >
+                                            <span>{suggestion}</span>
+                                            <span className="text-[10px] text-slate-400 group-hover:text-indigo-400">Match in {activeServiceLine?.name}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
 
