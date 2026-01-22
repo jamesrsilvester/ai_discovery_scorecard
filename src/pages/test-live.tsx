@@ -112,8 +112,8 @@ export default function TestLive() {
     // Animate loading steps
     useEffect(() => {
         if (!loading) return;
-        // 19 steps total: 1 (Gen) + 9 (Ask) + 9 (Analyze) + 1 (Agg)
-        const stepCount = 20;
+        // 24 steps total: 1 (Gen) + 9 (Ask) + 9 (Analyze) + 5 (Detailed Aggregation)
+        const stepCount = 24;
         const interval = 1200; // 1.2s per step
         const timers = Array.from({ length: stepCount }).map((_, i) =>
             setTimeout(() => setLoadingStep(i), i * interval)
@@ -140,6 +140,10 @@ export default function TestLive() {
             icon: '📊'
         })),
         { label: 'Aggregating all 9 results...', icon: '✨' },
+        { label: 'Calculating market share & sentiment...', icon: '📈' },
+        { label: 'Deep-linking detected mentions...', icon: '🔗' },
+        { label: 'Generating discoverability scorecard...', icon: '📋' },
+        { label: 'Finalizing visualizations...', icon: '🎨' },
     ], [currentQueries, service]);
 
     return (
