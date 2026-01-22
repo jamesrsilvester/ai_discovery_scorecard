@@ -216,7 +216,6 @@ export default function TestLive() {
                     </div>
                 </div>
 
-                {/* Loading State */}
                 {loading && (
                     <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm max-w-4xl animate-in fade-in duration-300">
                         <div className="flex items-center gap-4 mb-4">
@@ -227,9 +226,16 @@ export default function TestLive() {
                                 <div className="font-semibold text-slate-900 text-lg">
                                     {loadingSteps[loadingStep]?.icon} {loadingSteps[loadingStep]?.label}
                                 </div>
-                                <div className="text-sm text-slate-500">This typically takes 10-15 seconds</div>
+                                {result ? (
+                                    <div className="text-sm text-emerald-600 font-medium">Analysis Complete</div>
+                                ) : (
+                                    <div className="text-sm text-slate-500 font-mono">
+                                        Estimated {Math.ceil((loadingSteps.length - loadingStep) * 1.2)}s remaining
+                                    </div>
+                                )}
                             </div>
                         </div>
+
                         <div className="mt-8 space-y-8 animate-pulse">
                             {/* Skeleton Summary Cards */}
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
