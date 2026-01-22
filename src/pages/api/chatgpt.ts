@@ -47,34 +47,42 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(405).json({ message: 'Method not allowed' });
     }
 
-    const { serviceLine, market, targetBrand, step, queries: providedQueries } = req.body;
+    const { serviceLine, market, targetBrand, step, queries: providedQueries, userKeywords } = req.body;
 
     if (!serviceLine || !market) {
         return res.status(400).json({ message: 'Service line and market are required' });
     }
 
-    const brandName = targetBrand || 'Banner Health';
+    const brandName = targetBrand || 'Acme Health';
 
     try {
         let queries = providedQueries || [];
 
         // Step 1: Generate queries if not provided
         if (queries.length === 0) {
-            const variationPrompt = `
-You are a healthcare marketing expert. For the service line "${serviceLine}" in the "${market}" region, identify 3 distinct "consumer-friendly" keywords or phrases that patients actually use (e.g., instead of "Gastroenterology", they might search for "stomach doctor", "acid reflux", or "colonoscopy").
+            const hasUserKeywords = userKeywords && userKeywords.length > 0;
+            const keywordsToUse = hasUserKeywords ? userKeywords.join(", ") : serviceLine;
 
-For EACH of those 3 consumer keywords, generate 3 different search query variations focused on finding a provider/specialist.
+            const variationPrompt = `
+You are a healthcare marketing expert. 
+${hasUserKeywords
+                    ? `The user has specified these priority patient keywords: ${keywordsToUse}.`
+                    : `For the service line "${serviceLine}" in the "${market}" region, identify 3 distinct "consumer-friendly" keywords or phrases that patients actually use (e.g., instead of "Gastroenterology", they might search for "stomach doctor", "acid reflux", or "colonoscopy").`
+                }
+
+For ${hasUserKeywords ? 'those specific keywords' : 'EACH of those 3 consumer keywords'}, generate different search query variations focused on finding a provider/specialist in "${market}".
 
 Total queries to generate: 9.
 
 Return a JSON object with:
-- "keywords": an array of the 3 consumer keywords identified
-- "queries": an array of all 9 query strings (3 variations for each keyword)
+- "keywords": an array of the 3 primary consumer keywords ${hasUserKeywords ? '(including the ones provided)' : 'identified'}
+- "queries": an array of all 9 query strings (3 variations for each of the 3 keywords)
 
 CRITICAL INSTRUCTIONS:
-1. EVERY query must explicitly include the location "${market}" (e.g., "stomach doctor in ${market}", "best acid reflux clinic ${market}").
-2. DO NOT use the phrases "near me", "nearby", or "local" as the AI simulation requires explicit geographic context to return relevant results.
-3. Ensure all queries are focused on provider discovery.
+1. EVERY query must explicitly include the location "${market}" (e.g., "stomach doctor in ${market}").
+2. DO NOT use the phrases "near me", "nearby", or "local".
+3. If the user provided fewer than 3 keywords, you must identify additional common patient keywords to reach a total of 3 distinct keyword groups.
+4. Ensure all queries are focused on provider discovery.
 `;
 
             const variationsResult = await fetchOpenAICompat(

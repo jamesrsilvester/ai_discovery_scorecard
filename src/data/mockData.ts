@@ -6,6 +6,7 @@ export interface ServiceLine {
     id: string;
     name: string;
     subLines: string[];
+    keywords: string[];
 }
 
 export interface Competitor {
@@ -39,37 +40,83 @@ export const TAXONOMY: ServiceLine[] = [
     {
         id: "bariatrics",
         name: "Bariatrics & Weight Management",
-        subLines: ["Bariatric Surgery", "Medical Weight Loss", "Obesity-Related Conditions"]
+        subLines: ["Bariatric Surgery", "Medical Weight Loss", "Obesity-Related Conditions"],
+        keywords: [
+            "weight loss surgery", "gastric sleeve", "bariatric surgeon", "medical weight loss",
+            "obesity specialist", "lap band surgery", "weight loss clinic", "gastric bypass",
+            "metabolic surgery", "non-surgical weight loss", "bariatric center",
+            "weight management doctor", "semaglutide clinic", "medical obesity treatment",
+            "weight loss procedure"
+        ]
     },
     {
         id: "gi",
         name: "Gastroenterology & Digestive Health",
-        subLines: ["General GI", "Endoscopy", "Colonoscopy", "IBD", "Hepatology"]
+        subLines: ["General GI", "Endoscopy", "Colonoscopy", "IBD", "Hepatology"],
+        keywords: [
+            "gastroenterologist", "endoscopy center", "colonoscopy screening", "stomach doctor",
+            "acid reflux specialist", "IBD clinic", "liver specialist", "digestive health",
+            "heartburn treatment", "abdominal pain doctor", "GI specialist",
+            "Crohn's disease doctor", "gastroscopy", "digestive disorders", "colorectal screening"
+        ]
     },
     {
         id: "ortho",
         name: "Orthopedics & Sports Medicine",
-        subLines: ["Sports Medicine", "Joint Replacement", "Spine", "Hand & Upper Extremity", "Foot & Ankle"]
+        subLines: ["Sports Medicine", "Joint Replacement", "Spine", "Hand & Upper Extremity", "Foot & Ankle"],
+        keywords: [
+            "orthopedic surgeon", "sports medicine", "joint replacement", "knee replacement",
+            "hip replacement", "spine doctor", "shoulder specialist", "hand surgeon",
+            "foot and ankle doctor", "orthopedic clinic", "ACL surgery", "orthopedic specialist",
+            "physical therapy", "back pain doctor", "fracture care"
+        ]
     },
     {
         id: "cardio",
         name: "Cardiovascular & Heart",
-        subLines: ["General Cardiology", "Interventional Cardiology", "Heart Failure", "Vascular Surgery"]
+        subLines: ["General Cardiology", "Interventional Cardiology", "Heart Failure", "Vascular Surgery"],
+        keywords: [
+            "cardiologist", "heart specialist", "heart clinic", "chest pain doctor",
+            "arrhythmia specialist", "vascular surgeon", "heart failure clinic",
+            "cardiothoracic surgeon", "atrial fibrillation treatment", "blood pressure specialist",
+            "cardiac rehab", "diagnostic cardiology", "preventative cardiology",
+            "echocardiogram center", "heart rhythm doctor"
+        ]
     },
     {
         id: "oncology",
         name: "Oncology & Cancer Center",
-        subLines: ["Medical Oncology", "Radiation Oncology", "Surgical Oncology", "Breast Cancer", "Lung Cancer"]
+        subLines: ["Medical Oncology", "Radiation Oncology", "Surgical Oncology", "Breast Cancer", "Lung Cancer"],
+        keywords: [
+            "oncologist", "cancer center", "cancer specialist", "breast cancer doctor",
+            "chemotherapy clinic", "radiation therapy", "surgical oncology", "hematologist",
+            "lung cancer specialist", "infusion center", "cancer treatment",
+            "colorectal cancer doctor", "prostate cancer specialist", "ovarian cancer doctor",
+            "oncology clinic"
+        ]
     },
     {
         id: "primary",
         name: "Primary Care & Family Medicine",
-        subLines: ["Adult Medicine", "Pediatrics", "Internal Medicine", "Wellness Exams"]
+        subLines: ["Adult Medicine", "Pediatrics", "Internal Medicine", "Wellness Exams"],
+        keywords: [
+            "primary care physician", "family doctor", "PCP", "internal medicine",
+            "pediatrician", "wellness exam", "annual physical", "general practitioner",
+            "primary care clinic", "chronic disease management", "preventative care doctor",
+            "vaccinations", "travel medicine", "women's health primary care", "men's health primary care"
+        ]
     },
     {
         id: "womens",
         name: "Women's Health & OBGYN",
-        subLines: ["Obstetrics", "Gynecology", "Maternal Fetal Medicine", "Pregnancy Care"]
+        subLines: ["Obstetrics", "Gynecology", "Maternal Fetal Medicine", "Pregnancy Care"],
+        keywords: [
+            "obgyn", "gynecologist", "obstetrician", "prenatal care",
+            "maternal fetal medicine", "pregnancy doctor", "midwife",
+            "fertility specialist", "menopause clinic", "womens health center",
+            "papsmear", "birth control clinic", "infertility doctor",
+            "pelvic health specialist", "gynecologic oncology"
+        ]
     }
 ];
 

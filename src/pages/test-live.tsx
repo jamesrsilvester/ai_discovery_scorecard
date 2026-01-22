@@ -42,6 +42,10 @@ export default function TestLive() {
     const [error, setError] = useState<string | null>(null);
     const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
+    // Keyword Tuning State
+    const [selectedKeywords, setSelectedKeywords] = useState<string[]>([]);
+    const [customKeyword, setCustomKeyword] = useState('');
+
     // Derived State
     const competitorsForMarket = useMemo(() => {
         const comps = COMPETITORS[selectedMarket] || [];
@@ -57,6 +61,12 @@ export default function TestLive() {
 
     const activeServiceLine = TAXONOMY.find(s => s.id === selectedServiceLineId);
 
+    // Reset keywords when service line changes
+    useEffect(() => {
+        setSelectedKeywords([]);
+        setCustomKeyword('');
+    }, [selectedServiceLineId]);
+
     const handleRun = async () => {
         setLoading(true);
         setLoadingStep(0);
@@ -65,6 +75,8 @@ export default function TestLive() {
 
         try {
             // Step 1: Generate Queries first (fast)
+            const userKeywords = [...selectedKeywords, ...(customKeyword ? [customKeyword] : [])];
+
             const genRes = await fetch('/api/chatgpt', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -72,7 +84,8 @@ export default function TestLive() {
                     serviceLine: activeServiceLine?.name,
                     market: selectedMarket,
                     targetBrand: targetBrand,
-                    step: 'generate'
+                    step: 'generate',
+                    userKeywords // Send the tuned keywords
                 }),
             });
             const genData = await genRes.json();
@@ -196,6 +209,48 @@ export default function TestLive() {
                                     <option key={brand} value={brand}>{brand}</option>
                                 ))}
                             </select>
+                        </div>
+                    </div>
+
+                    {/* 4. Keyword Tuning Grid */}
+                    <div className="border-t border-slate-100 pt-6 mb-6">
+                        <div className="flex items-center justify-between mb-3">
+                            <label className="block text-sm font-semibold text-slate-700">4. Tune Keywords (Optional - select up to 5)</label>
+                            <span className="text-xs text-slate-400 font-medium">{selectedKeywords.length}/5 selected</span>
+                        </div>
+
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 mb-4">
+                            {activeServiceLine?.keywords.map((kw) => {
+                                const isSelected = selectedKeywords.includes(kw);
+                                return (
+                                    <button
+                                        key={kw}
+                                        onClick={() => {
+                                            if (isSelected) {
+                                                setSelectedKeywords(selectedKeywords.filter(k => k !== kw));
+                                            } else if (selectedKeywords.length < 5) {
+                                                setSelectedKeywords([...selectedKeywords, kw]);
+                                            }
+                                        }}
+                                        className={`px-3 py-2 rounded-lg text-xs font-medium transition-all border ${isSelected
+                                            ? 'bg-indigo-50 border-indigo-200 text-indigo-700 shadow-sm'
+                                            : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50'
+                                            }`}
+                                    >
+                                        {kw}
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        <div className="flex gap-2">
+                            <input
+                                type="text"
+                                placeholder="Add custom keyword..."
+                                value={customKeyword}
+                                onChange={(e) => setCustomKeyword(e.target.value)}
+                                className="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                            />
                         </div>
                     </div>
 
