@@ -230,23 +230,38 @@ export default function TestLive() {
                                 <div className="text-sm text-slate-500">This typically takes 10-15 seconds</div>
                             </div>
                         </div>
-                        <div className="space-y-2">
-                            {loadingSteps.map((step, i) => (
-                                <div key={i} className="flex items-center gap-3">
-                                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${i < loadingStep ? 'bg-emerald-100 text-emerald-600' :
-                                        i === loadingStep ? 'bg-indigo-100 text-indigo-600 animate-pulse' :
-                                            'bg-slate-100 text-slate-400'
-                                        }`}>
-                                        {i < loadingStep ? <CheckCircle className="w-4 h-4" /> : i + 1}
-                                    </div>
-                                    <span className={`text-sm transition-colors ${i < loadingStep ? 'text-emerald-600' :
-                                        i === loadingStep ? 'text-slate-900 font-medium' :
-                                            'text-slate-400'
-                                        }`}>
-                                        {step.label}
-                                    </span>
+                        <div className="mt-8 space-y-8 animate-pulse">
+                            {/* Skeleton Summary Cards */}
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                {[1, 2, 3, 4].map(i => (
+                                    <div key={i} className="bg-slate-50 h-24 rounded-xl border border-slate-100" />
+                                ))}
+                            </div>
+
+                            {/* Skeleton List */}
+                            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+                                <div className="h-12 bg-slate-50 border-b border-slate-200" />
+                                <div className="divide-y divide-slate-100">
+                                    {[1, 2, 3].map(i => (
+                                        <div key={i} className="p-6 space-y-3">
+                                            <div className="h-4 bg-slate-100 rounded w-3/4" />
+                                            <div className="h-3 bg-slate-50 rounded w-1/2" />
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
+                            </div>
+
+                            {/* Skeleton Chart */}
+                            <div className="bg-white p-6 rounded-xl border border-slate-200 space-y-4">
+                                <div className="h-6 bg-slate-100 rounded w-1/4 mb-6" />
+                                {[1, 2, 3, 4, 5].map(i => (
+                                    <div key={i} className="flex gap-4 items-center">
+                                        <div className="w-8 h-4 bg-slate-100 rounded" />
+                                        <div className="flex-1 h-3 bg-slate-50 rounded-full" />
+                                        <div className="w-20 h-4 bg-slate-100 rounded" />
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 )}
