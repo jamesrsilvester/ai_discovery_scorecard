@@ -91,22 +91,11 @@ export default function TestLive() {
     // Animate loading steps
     useEffect(() => {
         if (!loading) return;
-        const steps = [
-            { delay: 0 },      // Step 0: Generating queries
-            { delay: 1500 },   // Step 1: Query 1 - asking
-            { delay: 3000 },   // Step 2: Query 2 - asking
-            { delay: 4500 },   // Step 3: Query 3 - asking
-            { delay: 6000 },   // Step 4: Query 4 - asking
-            { delay: 7500 },   // Step 5: Query 5 - asking
-            { delay: 9000 },   // Step 6: Analyzing 1
-            { delay: 10500 },  // Step 7: Analyzing 2
-            { delay: 12000 },  // Step 8: Analyzing 3
-            { delay: 13500 },  // Step 9: Analyzing 4
-            { delay: 15000 },  // Step 10: Analyzing 5
-            { delay: 16500 },  // Step 11: Aggregating
-        ];
-        const timers = steps.map((step, i) =>
-            setTimeout(() => setLoadingStep(i), step.delay)
+        // 19 steps total: 1 (Gen) + 9 (Ask) + 9 (Analyze) + 1 (Agg)
+        const stepCount = 20;
+        const interval = 1200; // 1.2s per step
+        const timers = Array.from({ length: stepCount }).map((_, i) =>
+            setTimeout(() => setLoadingStep(i), i * interval)
         );
         return () => timers.forEach(t => clearTimeout(t));
     }, [loading]);
@@ -115,18 +104,30 @@ export default function TestLive() {
     const region = selectedMarket;
 
     const loadingSteps = [
-        { label: `Generating 5 query variations for ${service}...`, icon: '🔍' },
-        { label: `Asking: "best ${service} in ${region}"`, icon: '💬' },
-        { label: `Asking: "${service} specialists near me"`, icon: '💬' },
-        { label: `Asking: "top rated ${service} doctors in ${region}"`, icon: '💬' },
-        { label: `Asking: "recommended ${service} clinics in ${region}"`, icon: '💬' },
-        { label: `Asking: "${service} provider reviews in ${region}"`, icon: '💬' },
-        { label: `Analyzing: "best ${service} in ${region}"`, icon: '📊' },
-        { label: `Analyzing: "${service} specialists near me"`, icon: '📊' },
-        { label: `Analyzing: "top rated ${service} doctors in ${region}"`, icon: '📊' },
-        { label: `Analyzing: "recommended ${service} clinics in ${region}"`, icon: '📊' },
-        { label: `Analyzing: "${service} provider reviews in ${region}"`, icon: '📊' },
-        { label: 'Aggregating results...', icon: '✨' },
+        { label: `Identifying consumer keywords for ${service}...`, icon: '🔍' },
+        // Keyword 1
+        { label: `Asking variation 1 of consumer keyword 1...`, icon: '💬' },
+        { label: `Asking variation 2 of consumer keyword 1...`, icon: '💬' },
+        { label: `Asking variation 3 of consumer keyword 1...`, icon: '💬' },
+        // Keyword 2
+        { label: `Asking variation 1 of consumer keyword 2...`, icon: '💬' },
+        { label: `Asking variation 2 of consumer keyword 2...`, icon: '💬' },
+        { label: `Asking variation 3 of consumer keyword 2...`, icon: '💬' },
+        // Keyword 3
+        { label: `Asking variation 1 of consumer keyword 3...`, icon: '💬' },
+        { label: `Asking variation 2 of consumer keyword 3...`, icon: '💬' },
+        { label: `Asking variation 3 of consumer keyword 3...`, icon: '💬' },
+        // Analysis
+        { label: `Analyzing responses for keyword 1...`, icon: '📊' },
+        { label: `Analyzing responses for keyword 1...`, icon: '📊' },
+        { label: `Analyzing responses for keyword 1...`, icon: '📊' },
+        { label: `Analyzing responses for keyword 2...`, icon: '📊' },
+        { label: `Analyzing responses for keyword 2...`, icon: '📊' },
+        { label: `Analyzing responses for keyword 2...`, icon: '📊' },
+        { label: `Analyzing responses for keyword 3...`, icon: '📊' },
+        { label: `Analyzing responses for keyword 3...`, icon: '📊' },
+        { label: `Analyzing responses for keyword 3...`, icon: '📊' },
+        { label: 'Aggregating all 9 results...', icon: '✨' },
     ];
 
     return (
@@ -134,7 +135,7 @@ export default function TestLive() {
             <div className="space-y-6">
                 <div>
                     <h1 className="text-2xl font-bold text-slate-900">Live Data Test (ChatGPT)</h1>
-                    <p className="text-slate-500">Configure your target and run 5 query variations with aggregated results.</p>
+                    <p className="text-slate-500">Simulate real patient behavior with 9 consumer-centric queries (3 keywords x 3 variations).</p>
                 </div>
 
                 <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm max-w-4xl">

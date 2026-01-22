@@ -56,20 +56,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const brandName = targetBrand || 'Banner Health';
 
     try {
-        // Step 1: Generate 5 query variations
+        // Step 1: Generate 9 query variations (3 keywords x 3 variations)
         const variationPrompt = `
-You are a healthcare marketing expert. Generate 5 different search queries that a patient might use when searching for ${serviceLine} providers or specialists in ${market}.
+You are a healthcare marketing expert. For the service line "${serviceLine}" in "${market}", identify 3 distinct "consumer-friendly" keywords or phrases that patients actually use (e.g., instead of "Gastroenterology", they might search for "stomach doctor", "acid reflux", or "colonoscopy").
 
-All 5 queries should focus on FINDING A PROVIDER - asking "who is the best" or "where can I find" type questions. They should be variations of the same fundamental question (finding a provider), NOT different topics like costs, symptoms, or insurance.
+For EACH of those 3 consumer keywords, generate 3 different search query variations focused on finding a provider/specialist.
 
-Examples of good variations:
-- "best ${serviceLine.toLowerCase()} doctor in ${market}"
-- "${serviceLine.toLowerCase()} specialists near me ${market}"
-- "top rated ${serviceLine.toLowerCase()} in ${market}"
-- "who is the best ${serviceLine.toLowerCase()} provider in ${market}"
-- "recommended ${serviceLine.toLowerCase()} clinics ${market}"
+Total queries to generate: 9.
 
-Return a JSON object with key "queries" containing an array of 5 query strings. Keep them realistic, concise, and all focused on finding a provider.
+Return a JSON object with:
+- "keywords": an array of the 3 consumer keywords identified
+- "queries": an array of all 9 query strings (3 variations for each keyword)
+
+Keep all queries focused on provider discovery (e.g., "best [keyword] in [market]", "[keyword] specialist near me", etc.).
 `;
 
         const variationsResult = await fetchOpenAICompat(
