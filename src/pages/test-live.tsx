@@ -117,7 +117,7 @@ export default function TestLive() {
     ];
 
     return (
-        <AppLayout>
+        <AppLayout showFilters={false}>
             <div className="space-y-6">
                 <div>
                     <h1 className="text-2xl font-bold text-slate-900">Live Data Test (ChatGPT)</h1>
@@ -209,14 +209,14 @@ export default function TestLive() {
                             {loadingSteps.map((step, i) => (
                                 <div key={i} className="flex items-center gap-3">
                                     <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${i < loadingStep ? 'bg-emerald-100 text-emerald-600' :
-                                            i === loadingStep ? 'bg-indigo-100 text-indigo-600 animate-pulse' :
-                                                'bg-slate-100 text-slate-400'
+                                        i === loadingStep ? 'bg-indigo-100 text-indigo-600 animate-pulse' :
+                                            'bg-slate-100 text-slate-400'
                                         }`}>
                                         {i < loadingStep ? <CheckCircle className="w-4 h-4" /> : i + 1}
                                     </div>
                                     <span className={`text-sm transition-colors ${i < loadingStep ? 'text-emerald-600' :
-                                            i === loadingStep ? 'text-slate-900 font-medium' :
-                                                'text-slate-400'
+                                        i === loadingStep ? 'text-slate-900 font-medium' :
+                                            'text-slate-400'
                                         }`}>
                                         {step.label}
                                     </span>

@@ -5,7 +5,12 @@ import FilterRow from './FilterRow';
 import { ScorecardProvider } from '@/context/ScorecardContext';
 import DashboardShell from './DashboardShell';
 
-export default function AppLayout({ children }: { children: ReactNode }) {
+interface AppLayoutProps {
+    children: ReactNode;
+    showFilters?: boolean;
+}
+
+export default function AppLayout({ children, showFilters = true }: AppLayoutProps) {
     return (
         <ScorecardProvider>
             <DashboardShell>
@@ -15,7 +20,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
                     </Head>
 
                     <Header />
-                    <FilterRow />
+                    {showFilters && <FilterRow />}
 
                     <main className="max-w-7xl mx-auto px-6 py-8 space-y-8">
                         {children}
