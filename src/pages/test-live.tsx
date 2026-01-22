@@ -247,18 +247,20 @@ export default function TestLive() {
                         </div>
 
                         {/* Selected Keywords Chips */}
-                        <div className="flex flex-wrap gap-2 mb-4 min-h-[40px] p-2 bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
-                            {selectedKeywords.map((kw) => (
-                                <button
-                                    key={kw}
-                                    onClick={() => handleRemoveKeyword(kw)}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-indigo-100 text-indigo-700 rounded-full text-sm font-medium hover:bg-red-50 hover:text-red-600 hover:border-red-100 transition-all group"
-                                >
-                                    {kw}
-                                    <X className="w-3.5 h-3.5 opacity-40 group-hover:opacity-100" />
-                                </button>
-                            ))}
-                        </div>
+                        {selectedKeywords.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mb-4 min-h-[40px] p-2 bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+                                {selectedKeywords.map((kw) => (
+                                    <button
+                                        key={kw}
+                                        onClick={() => handleRemoveKeyword(kw)}
+                                        className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-indigo-100 text-indigo-700 rounded-full text-sm font-medium hover:bg-red-50 hover:text-red-600 hover:border-red-100 transition-all group"
+                                    >
+                                        {kw}
+                                        <X className="w-3.5 h-3.5 opacity-40 group-hover:opacity-100" />
+                                    </button>
+                                ))}
+                            </div>
+                        )}
 
                         <div className="relative">
                             <div className="flex gap-2">
