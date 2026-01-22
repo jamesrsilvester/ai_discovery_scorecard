@@ -184,7 +184,7 @@ export default function TestLive() {
                             ) : (
                                 <>
                                     <Play className="w-5 h-5" />
-                                    Run Multi-Query Analysis
+                                    Run Analysis
                                 </>
                             )}
                         </button>
