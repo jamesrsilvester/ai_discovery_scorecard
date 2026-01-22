@@ -152,20 +152,21 @@ export default function TestLive() {
     // Animate loading steps
     useEffect(() => {
         if (!loading) return;
-        // 24 steps total: 1 (Gen) + 9 (Ask) + 9 (Analyze) + 5 (Detailed Aggregation)
-        const stepCount = 24;
-        const interval = 3600; // 3.6s per step
+        // Steps: 1 (Gen) + N (Ask) + N (Analyze) + 5 (Detailed Aggregation)
+        const queryCount = selectedKeywords.length > 0 ? selectedKeywords.length * 3 : 15;
+        const stepCount = 1 + (queryCount * 2) + 5;
+        const interval = 3000; // 3s per step (slightly faster to accommodate more queries)
         const timers = Array.from({ length: stepCount }).map((_, i) =>
             setTimeout(() => setLoadingStep(i), i * interval)
         );
         return () => timers.forEach(t => clearTimeout(t));
-    }, [loading]);
+    }, [loading, selectedKeywords]);
 
     const service = activeServiceLine?.name || 'service';
     const region = selectedMarket;
 
     const currentQueries = tempQueries.length > 0 ? tempQueries :
-        (result?.queries.length ? result.queries : Array(9).fill(null));
+        (result?.queries.length ? result.queries : Array(selectedKeywords.length > 0 ? selectedKeywords.length * 3 : 15).fill(null));
 
     const loadingSteps = useMemo(() => [
         { label: `Identifying consumer keywords for ${service}...`, icon: '🔍' },
@@ -241,7 +242,7 @@ export default function TestLive() {
 
                     <div className="border-t border-slate-100 pt-6 mb-6">
                         <div className="flex items-center justify-between mb-3">
-                            <label className="block text-sm font-semibold text-slate-700">4. Active Keywords (Selected terms will guide the AI analysis)</label>
+                            <label className="block text-sm font-semibold text-slate-700">4. Tune Keywords - Optional</label>
                             <span className="text-xs text-slate-400 font-medium">{selectedKeywords.length}/5 max</span>
                         </div>
 
@@ -316,7 +317,7 @@ export default function TestLive() {
                             {loading ? (
                                 <>
                                     <Loader2 className="w-5 h-5 animate-spin" />
-                                    Running 9 Queries...
+                                    Running {currentQueries.length} Queries...
                                 </>
                             ) : (
                                 <>
@@ -326,7 +327,7 @@ export default function TestLive() {
                             )}
                         </button>
                     </div>
-                </div>
+                </div >
 
                 {loading && (
                     <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm max-w-4xl animate-in fade-in duration-300">
@@ -378,168 +379,173 @@ export default function TestLive() {
                             </div>
                         </div>
                     </div>
-                )}
+                )
+                }
 
-                {error && (
-                    <div className="p-4 bg-red-50 text-red-700 rounded-lg text-sm flex items-start gap-2 max-w-4xl">
-                        <AlertTriangle className="w-5 h-5 shrink-0" />
-                        <div>
-                            <p className="font-bold">Error</p>
-                            <p>{error}</p>
-                        </div>
-                    </div>
-                )}
-
-                {result && (
-                    <div className="space-y-6 max-w-4xl animate-in fade-in slide-in-from-bottom-2 duration-500">
-                        {/* Aggregate Summary Cards */}
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                                <div className="flex items-center gap-2 text-slate-500 text-xs font-semibold uppercase tracking-wider mb-1">
-                                    <Target className="w-4 h-4" />
-                                    Mention Rate
-                                </div>
-                                <div className="text-3xl font-bold text-indigo-600">{result.aggregate.mentionRate}%</div>
-                                <div className="text-xs text-slate-400">{result.aggregate.mentionCount} of {result.aggregate.totalQueries} queries</div>
-                            </div>
-                            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                                <div className="flex items-center gap-2 text-slate-500 text-xs font-semibold uppercase tracking-wider mb-1">
-                                    <TrendingUp className="w-4 h-4" />
-                                    Avg Rank
-                                </div>
-                                <div className="text-3xl font-bold text-emerald-600">
-                                    {result.aggregate.avgRank !== null ? `#${result.aggregate.avgRank}` : 'N/A'}
-                                </div>
-                                <div className="text-xs text-slate-400">when mentioned</div>
-                            </div>
-                            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                                <div className="flex items-center gap-2 text-slate-500 text-xs font-semibold uppercase tracking-wider mb-1">
-                                    <Award className="w-4 h-4" />
-                                    First Mentions
-                                </div>
-                                <div className="text-3xl font-bold text-amber-600">{result.aggregate.firstMentionCount}</div>
-                                <div className="text-xs text-slate-400">top recommendation</div>
-                            </div>
-                            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                                <div className="flex items-center gap-2 text-slate-500 text-xs font-semibold uppercase tracking-wider mb-1">
-                                    <Users className="w-4 h-4" />
-                                    Competitors
-                                </div>
-                                <div className="text-3xl font-bold text-slate-700">{result.aggregate.allCompetitors.length}</div>
-                                <div className="text-xs text-slate-400">unique brands found</div>
+                {
+                    error && (
+                        <div className="p-4 bg-red-50 text-red-700 rounded-lg text-sm flex items-start gap-2 max-w-4xl">
+                            <AlertTriangle className="w-5 h-5 shrink-0" />
+                            <div>
+                                <p className="font-bold">Error</p>
+                                <p>{error}</p>
                             </div>
                         </div>
+                    )
+                }
 
-                        {/* Query Results Detail */}
-                        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                            <div className="px-4 py-3 bg-slate-50 border-b border-slate-200">
-                                <h3 className="font-semibold text-slate-900">Query Results for {result.targetBrand}</h3>
-                            </div>
-                            <div className="divide-y divide-slate-100">
-                                {result.results.map((r, i) => (
-                                    <div key={i} className="border-b last:border-b-0 border-slate-100">
-                                        <button
-                                            onClick={() => setExpandedIndex(expandedIndex === i ? null : i)}
-                                            className="w-full text-left p-4 hover:bg-slate-50 transition-colors flex items-start justify-between gap-4"
-                                        >
-                                            <div className="flex-1 min-w-0">
-                                                <div className="text-sm font-medium text-slate-900 mb-1">"{r.query}"</div>
-                                                <div className="flex flex-wrap gap-1">
-                                                    {r.analysis.entitiesDetected?.slice(0, 5).map((entity, j) => (
-                                                        <span
-                                                            key={j}
-                                                            className={`px-2 py-0.5 text-xs rounded ${entity === result.targetBrand
-                                                                ? 'bg-indigo-100 text-indigo-700 font-semibold'
-                                                                : 'bg-slate-100 text-slate-600'
-                                                                }`}
-                                                        >
-                                                            {entity}
-                                                        </span>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center gap-4">
-                                                <div className="text-right shrink-0">
-                                                    {r.analysis.rank !== null ? (
-                                                        <div className={`text-lg font-bold ${r.analysis.rank === 1 ? 'text-emerald-600' : 'text-slate-600'}`}>
-                                                            #{r.analysis.rank}
-                                                        </div>
-                                                    ) : (
-                                                        <div className="text-sm text-red-500 font-medium">Not Mentioned</div>
-                                                    )}
-                                                    {r.analysis.firstMentioned === result.targetBrand && (
-                                                        <div className="text-xs text-amber-600 font-semibold">★ First</div>
-                                                    )}
-                                                </div>
-                                                {expandedIndex === i ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
-                                            </div>
-                                        </button>
-
-                                        {expandedIndex === i && (
-                                            <div className="px-4 pb-6 bg-slate-50/50 animate-in slide-in-from-top-1 duration-200">
-                                                <div className="bg-white p-4 rounded-lg border border-slate-200 space-y-4 shadow-inner">
-                                                    <div>
-                                                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Full Query</div>
-                                                        <div className="text-sm text-slate-700 italic bg-slate-50 p-2 rounded border border-slate-100">{r.query}</div>
-                                                    </div>
-                                                    <div>
-                                                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">All Detected Brands</div>
-                                                        <div className="flex flex-wrap gap-2">
-                                                            {r.analysis.entitiesDetected.length > 0 ? r.analysis.entitiesDetected.map((brand, idx) => (
-                                                                <span key={idx} className="px-2 py-1 bg-white border border-slate-200 rounded text-xs text-slate-600">
-                                                                    {brand}
-                                                                </span>
-                                                            )) : <span className="text-xs text-slate-400">No brands detected</span>}
-                                                        </div>
-                                                    </div>
-                                                    <div>
-                                                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Raw AI Response Excerpt</div>
-                                                        <div className="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap">
-                                                            {r.rawResponse}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
+                {
+                    result && (
+                        <div className="space-y-6 max-w-4xl animate-in fade-in slide-in-from-bottom-2 duration-500">
+                            {/* Aggregate Summary Cards */}
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                                    <div className="flex items-center gap-2 text-slate-500 text-xs font-semibold uppercase tracking-wider mb-1">
+                                        <Target className="w-4 h-4" />
+                                        Mention Rate
                                     </div>
-                                ))}
+                                    <div className="text-3xl font-bold text-indigo-600">{result.aggregate.mentionRate}%</div>
+                                    <div className="text-xs text-slate-400">{result.aggregate.mentionCount} of {result.aggregate.totalQueries} queries</div>
+                                </div>
+                                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                                    <div className="flex items-center gap-2 text-slate-500 text-xs font-semibold uppercase tracking-wider mb-1">
+                                        <TrendingUp className="w-4 h-4" />
+                                        Avg Rank
+                                    </div>
+                                    <div className="text-3xl font-bold text-emerald-600">
+                                        {result.aggregate.avgRank !== null ? `#${result.aggregate.avgRank}` : 'N/A'}
+                                    </div>
+                                    <div className="text-xs text-slate-400">when mentioned</div>
+                                </div>
+                                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                                    <div className="flex items-center gap-2 text-slate-500 text-xs font-semibold uppercase tracking-wider mb-1">
+                                        <Award className="w-4 h-4" />
+                                        First Mentions
+                                    </div>
+                                    <div className="text-3xl font-bold text-amber-600">{result.aggregate.firstMentionCount}</div>
+                                    <div className="text-xs text-slate-400">top recommendation</div>
+                                </div>
+                                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                                    <div className="flex items-center gap-2 text-slate-500 text-xs font-semibold uppercase tracking-wider mb-1">
+                                        <Users className="w-4 h-4" />
+                                        Competitors
+                                    </div>
+                                    <div className="text-3xl font-bold text-slate-700">{result.aggregate.allCompetitors.length}</div>
+                                    <div className="text-xs text-slate-400">unique brands found</div>
+                                </div>
                             </div>
-                        </div>
 
-                        {/* Competitors Found */}
-                        {result.aggregate.allCompetitors.length > 0 && (
-                            <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                                <h4 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-                                    <TrendingUp className="w-5 h-5 text-indigo-500" />
-                                    Competitor Share of Voice
-                                </h4>
-                                <div className="space-y-3">
-                                    {result.aggregate.allCompetitors.map((comp, i) => (
-                                        <div key={i} className="flex items-center gap-4">
-                                            <div className="w-8 font-mono text-sm text-slate-400 font-bold">#{i + 1}</div>
-                                            <div className="flex-1">
-                                                <div className="flex justify-between text-sm mb-1">
-                                                    <span className="font-semibold text-slate-700">{comp.name}</span>
-                                                    <span className="text-slate-500">{Math.round((comp.count / result.aggregate.totalQueries) * 100)}%</span>
+                            {/* Query Results Detail */}
+                            <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                                <div className="px-4 py-3 bg-slate-50 border-b border-slate-200">
+                                    <h3 className="font-semibold text-slate-900">Query Results for {result.targetBrand}</h3>
+                                </div>
+                                <div className="divide-y divide-slate-100">
+                                    {result.results.map((r, i) => (
+                                        <div key={i} className="border-b last:border-b-0 border-slate-100">
+                                            <button
+                                                onClick={() => setExpandedIndex(expandedIndex === i ? null : i)}
+                                                className="w-full text-left p-4 hover:bg-slate-50 transition-colors flex items-start justify-between gap-4"
+                                            >
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="text-sm font-medium text-slate-900 mb-1">"{r.query}"</div>
+                                                    <div className="flex flex-wrap gap-1">
+                                                        {r.analysis.entitiesDetected?.slice(0, 5).map((entity, j) => (
+                                                            <span
+                                                                key={j}
+                                                                className={`px-2 py-0.5 text-xs rounded ${entity === result.targetBrand
+                                                                    ? 'bg-indigo-100 text-indigo-700 font-semibold'
+                                                                    : 'bg-slate-100 text-slate-600'
+                                                                    }`}
+                                                            >
+                                                                {entity}
+                                                            </span>
+                                                        ))}
+                                                    </div>
                                                 </div>
-                                                <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                                                    <div
-                                                        className="bg-indigo-500 h-full rounded-full transition-all duration-1000"
-                                                        style={{ width: `${(comp.count / result.aggregate.totalQueries) * 100}%` }}
-                                                    />
+                                                <div className="flex items-center gap-4">
+                                                    <div className="text-right shrink-0">
+                                                        {r.analysis.rank !== null ? (
+                                                            <div className={`text-lg font-bold ${r.analysis.rank === 1 ? 'text-emerald-600' : 'text-slate-600'}`}>
+                                                                #{r.analysis.rank}
+                                                            </div>
+                                                        ) : (
+                                                            <div className="text-sm text-red-500 font-medium">Not Mentioned</div>
+                                                        )}
+                                                        {r.analysis.firstMentioned === result.targetBrand && (
+                                                            <div className="text-xs text-amber-600 font-semibold">★ First</div>
+                                                        )}
+                                                    </div>
+                                                    {expandedIndex === i ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
                                                 </div>
-                                            </div>
-                                            <div className="w-24 text-right text-xs font-bold text-slate-400 uppercase tracking-tight">
-                                                {comp.count} / {result.aggregate.totalQueries} mentions
-                                            </div>
+                                            </button>
+
+                                            {expandedIndex === i && (
+                                                <div className="px-4 pb-6 bg-slate-50/50 animate-in slide-in-from-top-1 duration-200">
+                                                    <div className="bg-white p-4 rounded-lg border border-slate-200 space-y-4 shadow-inner">
+                                                        <div>
+                                                            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Full Query</div>
+                                                            <div className="text-sm text-slate-700 italic bg-slate-50 p-2 rounded border border-slate-100">{r.query}</div>
+                                                        </div>
+                                                        <div>
+                                                            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">All Detected Brands</div>
+                                                            <div className="flex flex-wrap gap-2">
+                                                                {r.analysis.entitiesDetected.length > 0 ? r.analysis.entitiesDetected.map((brand, idx) => (
+                                                                    <span key={idx} className="px-2 py-1 bg-white border border-slate-200 rounded text-xs text-slate-600">
+                                                                        {brand}
+                                                                    </span>
+                                                                )) : <span className="text-xs text-slate-400">No brands detected</span>}
+                                                            </div>
+                                                        </div>
+                                                        <div>
+                                                            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Raw AI Response Excerpt</div>
+                                                            <div className="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap">
+                                                                {r.rawResponse}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     ))}
                                 </div>
                             </div>
-                        )}
-                    </div>
-                )}
-            </div>
-        </AppLayout>
+
+                            {/* Competitors Found */}
+                            {result.aggregate.allCompetitors.length > 0 && (
+                                <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                                    <h4 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                        <TrendingUp className="w-5 h-5 text-indigo-500" />
+                                        Competitor Share of Voice
+                                    </h4>
+                                    <div className="space-y-3">
+                                        {result.aggregate.allCompetitors.map((comp, i) => (
+                                            <div key={i} className="flex items-center gap-4">
+                                                <div className="w-8 font-mono text-sm text-slate-400 font-bold">#{i + 1}</div>
+                                                <div className="flex-1">
+                                                    <div className="flex justify-between text-sm mb-1">
+                                                        <span className="font-semibold text-slate-700">{comp.name}</span>
+                                                        <span className="text-slate-500">{Math.round((comp.count / result.aggregate.totalQueries) * 100)}%</span>
+                                                    </div>
+                                                    <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                                        <div
+                                                            className="bg-indigo-500 h-full rounded-full transition-all duration-1000"
+                                                            style={{ width: `${(comp.count / result.aggregate.totalQueries) * 100}%` }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="w-24 text-right text-xs font-bold text-slate-400 uppercase tracking-tight">
+                                                    {comp.count} / {result.aggregate.totalQueries} mentions
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )
+                }
+            </div >
+        </AppLayout >
     );
 }
