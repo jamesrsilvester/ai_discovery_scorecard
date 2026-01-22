@@ -7,6 +7,7 @@ export interface ServiceLine {
     name: string;
     subLines: string[];
     keywords: string[];
+    comprehensiveKeywords: string[];
 }
 
 export interface Competitor {
@@ -47,6 +48,17 @@ export const TAXONOMY: ServiceLine[] = [
             "metabolic surgery", "non-surgical weight loss", "bariatric center",
             "weight management doctor", "semaglutide clinic", "medical obesity treatment",
             "weight loss procedure"
+        ],
+        comprehensiveKeywords: [
+            "obesity medicine", "weight loss injections", "wegovy", "ozempic", "gastric balloon",
+            "endoscopic sleeve gastroplasty", "ESG weight loss", "duodenal switch", "bariatric nutritionist",
+            "weight loss support group", "gastric bypass revision", "bariatric dietitian",
+            "obesity counseling", "BMI reduction surgery", "weight loss for diabetes",
+            "gastric pleat surgery", "swallowable weight loss pill", "medical weight loss programs",
+            "vsg surgery", "rny bypass", "minigastric bypass", "medical supervised weight loss",
+            "weight loss surgery reviews", "bariatric surgeons directory", "gastric bypass cost",
+            "weight loss clinic denver", "bariatric surgery phx", "weight loss programs near me",
+            "best weight loss doctors", "non-surgical fat reduction", "metabolic health clinic"
         ]
     },
     {
@@ -58,6 +70,18 @@ export const TAXONOMY: ServiceLine[] = [
             "acid reflux specialist", "IBD clinic", "liver specialist", "digestive health",
             "heartburn treatment", "abdominal pain doctor", "GI specialist",
             "Crohn's disease doctor", "gastroscopy", "digestive disorders", "colorectal screening"
+        ],
+        comprehensiveKeywords: [
+            "ulcerative colitis specialist", "celiac disease doctor", "irritable bowel syndrome",
+            "ibs treatment", "gerd specialist", "esophageal manometry", "motility clinic",
+            "hepatologist", "fatty liver treatment", "hepatitis c doctor", "pancreas specialist",
+            "bile duct surgery", "colon cancer prevention", "hemorrhoid treatment", "polyps removal",
+            "sigmoidoscopy", "virtual colonoscopy", "capsule endoscopy", "pillcam", "stool test",
+            "fit test", "breath test for sibo", "sibo specialist", "leaky gut doctor",
+            "functional gi disorders", "fecal transplant", "microbiome analysis",
+            "bloating and gas treatment", "chronic constipation doctor", "diarrhea specialist",
+            "rectal bleeding", "barrett's esophagus", "swallowing disorders specialist",
+            "gallbladder doctor", "gallstones treatment", "gi clinic phoenix", "gi doctor denver"
         ]
     },
     {
@@ -69,6 +93,18 @@ export const TAXONOMY: ServiceLine[] = [
             "hip replacement", "spine doctor", "shoulder specialist", "hand surgeon",
             "foot and ankle doctor", "orthopedic clinic", "ACL surgery", "orthopedic specialist",
             "physical therapy", "back pain doctor", "fracture care"
+        ],
+        comprehensiveKeywords: [
+            "sports injury specialist", "rotator cuff repair", "meniscus tear surgery", "arthroscopy",
+            "pain management clinic", "rheumatology", "arthritis doctor", "osteoarthritis treatment",
+            "rheumatoid arthritis", "carpal tunnel surgery", "scoliosis specialist",
+            "herniated disc treatment", "sciatica doctor", "lower back pain relief",
+            "partial knee replacement", "total hip arthroplasty", "robotic joint surgery",
+            "mako robotic surgery", "orthobiologics", "prp injection", "stem cell therapy for joints",
+            "cortisone shot", "physical medicine and rehab", "physiatry", "podiatrist",
+            "bunion surgery", "plantar fasciitis treatment", "stress fracture",
+            "tennis elbow treatment", "golfer's elbow", "bursitis specialist", "ligament repair",
+            "tendonitis treatment", "orthopedic oncology", "pediatric orthopedics", "concussion clinic"
         ]
     },
     {
@@ -81,6 +117,16 @@ export const TAXONOMY: ServiceLine[] = [
             "cardiothoracic surgeon", "atrial fibrillation treatment", "blood pressure specialist",
             "cardiac rehab", "diagnostic cardiology", "preventative cardiology",
             "echocardiogram center", "heart rhythm doctor"
+        ],
+        comprehensiveKeywords: [
+            "stress test", "calcium score", "heart scan", "pacemaker specialist", "icd doctor",
+            "valve replacement", "taver procedure", "mitraclip", "heart murmur doctor",
+            "carotid artery disease", "peripheral artery disease", "pad treatment",
+            "varicose vein specialist", "deep vein thrombosis", "dvt doctor",
+            "stroke prevention", "atrial fibrillation ablation", "afib clinic", "holter monitor",
+            "cardiac catheterization", "angioplasty", "stent placement", "coronary artery disease",
+            "clogged arteries doctor", "high cholesterol specialist", "statin clinic",
+            "cardiovascular screening", "sports cardiology", "ejection fraction improvement"
         ]
     },
     {
@@ -93,6 +139,16 @@ export const TAXONOMY: ServiceLine[] = [
             "lung cancer specialist", "infusion center", "cancer treatment",
             "colorectal cancer doctor", "prostate cancer specialist", "ovarian cancer doctor",
             "oncology clinic"
+        ],
+        comprehensiveKeywords: [
+            "second opinion cancer", "cancer immunotherapy", "targeted therapy", "palliative care",
+            "genetic testing for cancer", "cancer survivorship", "clinical trials for cancer",
+            "bone marrow transplant", "stem cell transplant", "leukemia specialist",
+            "lymphoma doctor", "multiple myeloma specialist", "melanoma clinic",
+            "skin cancer specialist", "pancreatic cancer doctor", "liver cancer specialist",
+            "brain tumor center", "neuro-oncology", "gynecologic oncology", "urologic oncology",
+            "pediatric oncology", "cancer support services", "integrative oncology",
+            "cancer infusion denver", "oncology specialist phoenix"
         ]
     },
     {
@@ -104,6 +160,15 @@ export const TAXONOMY: ServiceLine[] = [
             "pediatrician", "wellness exam", "annual physical", "general practitioner",
             "primary care clinic", "chronic disease management", "preventative care doctor",
             "vaccinations", "travel medicine", "women's health primary care", "men's health primary care"
+        ],
+        comprehensiveKeywords: [
+            "same day doctor", "urgent care", "telehealth primary care", "concierge medicine",
+            "executive physical", "geriatrician", "senior care doctor", "asthma management",
+            "diabetes specialist primary care", "blood pressure clinic", "cholesterol management",
+            "obesity medicine primary care", "smoking cessation", "mental health in primary care",
+            "anxiety doctor pcp", "depression treatment pcp", "allergy testing pcp",
+            "flu shot clinic", "covid testing", "sports physicals", "camp physicals",
+            "employment physicals", "dot physicals", "immigration physicals"
         ]
     },
     {
@@ -116,6 +181,15 @@ export const TAXONOMY: ServiceLine[] = [
             "fertility specialist", "menopause clinic", "womens health center",
             "papsmear", "birth control clinic", "infertility doctor",
             "pelvic health specialist", "gynecologic oncology"
+        ],
+        comprehensiveKeywords: [
+            "high risk pregnancy", "endometriosis specialist", "pcos clinic", "fibroid treatment",
+            "hysterectomy options", "minimally invasive gynecology", "urogynecology",
+            "pelvic organ prolapse", "urinary incontinence women", "sexual health clinic",
+            "adolescent gynecology", "pediatric gynecology", "menopause hormone therapy",
+            "bioidentical hormones", "vulvar disorders", "breast health", "mammogram screening",
+            "breast ultrasound", "in vitro fertilization", "ivf center", "egg freezing",
+            "iui treatment", "reproductive endocrinology"
         ]
     }
 ];

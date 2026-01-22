@@ -65,8 +65,12 @@ export default function TestLive() {
     const suggestions = useMemo(() => {
         if (!customKeyword || !activeServiceLine) return [];
         const term = customKeyword.toLowerCase();
-        return activeServiceLine.keywords
+        // Search the COMPREHENSIVE list instead of just the grid ones
+        return activeServiceLine.comprehensiveKeywords
             .filter(kw => kw.toLowerCase().includes(term))
+            // EXCLUDE things already shown in the grid to provide NEW ideas
+            .filter(kw => !activeServiceLine.keywords.includes(kw))
+            // EXCLUDE things already selected
             .filter(kw => !selectedKeywords.includes(kw))
             .slice(0, 5); // Limit to top 5 matches
     }, [customKeyword, activeServiceLine, selectedKeywords]);
