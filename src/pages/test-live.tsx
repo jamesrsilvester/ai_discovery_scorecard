@@ -467,10 +467,10 @@ export default function TestLive() {
                                 <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
                                     <div className="flex items-center gap-2 text-slate-500 text-xs font-semibold uppercase tracking-wider mb-1">
                                         <Award className="w-4 h-4" />
-                                        First Mentions
+                                        Rank #1 Results
                                     </div>
                                     <div className="text-3xl font-bold text-amber-600">{result.aggregate.firstMentionCount}</div>
-                                    <div className="text-xs text-slate-400">top recommendation</div>
+                                    <div className="text-xs text-slate-400">top recommendations</div>
                                 </div>
                                 <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
                                     <div className="flex items-center gap-2 text-slate-500 text-xs font-semibold uppercase tracking-wider mb-1">
@@ -519,8 +519,11 @@ export default function TestLive() {
                                                         ) : (
                                                             <div className="text-sm text-red-500 font-medium">Not Mentioned</div>
                                                         )}
-                                                        {r.analysis.firstMentioned === result.targetBrand && (
-                                                            <div className="text-xs text-amber-600 font-semibold">★ First</div>
+                                                        {r.analysis.rank === 1 && (
+                                                            <div className="text-xs text-amber-600 font-semibold">★ Top Choice</div>
+                                                        )}
+                                                        {r.analysis.firstMentioned === result.targetBrand && r.analysis.rank !== 1 && (
+                                                            <div className="text-xs text-slate-400 font-medium">Mentioned First (Rank #{r.analysis.rank})</div>
                                                         )}
                                                     </div>
                                                     {expandedIndex === i ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}

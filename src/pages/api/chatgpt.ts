@@ -163,8 +163,8 @@ Analyze the following text which is a response from an AI to a user's health que
             ? rankedResults.reduce((sum, r) => sum + (r.analysis.rank || 0), 0) / rankedResults.length
             : null;
 
-        // Count first mentions
-        const firstMentionCount = results.filter(r => r.analysis.firstMentioned === brandName).length;
+        // Count Rank 1 mentions (Top Choice)
+        const firstMentionCount = results.filter(r => r.analysis.rank === 1).length;
 
         // Count competitor mentions
         const competitorCounts: Record<string, number> = {};

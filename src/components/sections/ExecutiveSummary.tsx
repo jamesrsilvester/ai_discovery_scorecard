@@ -42,7 +42,7 @@ export default function ExecutiveSummary() {
 
                     <div className="grid grid-cols-2 gap-4 mt-6">
                         <div className="p-3 bg-indigo-50 rounded-lg border border-indigo-100">
-                            <div className="text-xs text-indigo-600 uppercase font-semibold tracking-wider">First Mention</div>
+                            <div className="text-xs text-indigo-600 uppercase font-semibold tracking-wider">Rank #1 Mentions</div>
                             <div className="text-xl font-bold text-indigo-900">{metrics.firstMention.toFixed(1)}%</div>
                         </div>
                         <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
