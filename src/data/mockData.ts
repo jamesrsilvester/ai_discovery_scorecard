@@ -268,13 +268,24 @@ export const PROMPTS: Prompt[] = [
 ];
 
 // Mock Runs Generation
-// Function to generate random runs for the scorecard visuals
+// Simple seeded random to ensure stability between SSR and Hydration
+const seededRandom = (seed: number) => {
+    return () => {
+        seed = (seed * 16807) % 2147483647;
+        return (seed - 1) / 2147483646;
+    };
+};
+
+// Function to generate deterministic runs for the scorecard visuals
 const generateRuns = (): AIRun[] => {
     const runs: AIRun[] = [];
     const sources: AIPlatform[] = ["ChatGPT", "Perplexity", "Google AI Overviews"];
-    const now = new Date();
+    
+    // USE FIXED DATE for SSR/Hydration stability
+    const now = new Date("2024-05-20T12:00:00Z");
+    const rng = seededRandom(123); // Fixed seed
 
-    // Generate 4 weeks of data
+    // Generate 28 days of data
     for (let i = 0; i < 28; i++) {
         const date = new Date(now);
         date.setDate(date.getDate() - i);
@@ -282,8 +293,8 @@ const generateRuns = (): AIRun[] => {
 
         PROMPTS.forEach(prompt => {
             sources.forEach(source => {
-                // Random outcome logic
-                const rand = Math.random();
+                // Deterministic outcome logic
+                const rand = rng();
                 let rank: number | null = null;
                 let firstMentioned: string | null = null;
                 const entities = [];
@@ -291,20 +302,23 @@ const generateRuns = (): AIRun[] => {
                 if (rand > 0.3) { // 70% chance we are mentioned
                     // We are mentioned.
                     // 30% chance we are first
-                    if (Math.random() > 0.6) {
+                    if (rng() > 0.6) {
                         rank = 1;
                         firstMentioned = MY_BRAND;
                         entities.push(MY_BRAND);
                     } else {
                         rank = 2; // Rank 2 or 3
                         // Competitor is first
-                        const comp = COMPETITORS[prompt.market][0].name;
+                        const marketComps = COMPETITORS[prompt.market];
+                        const comp = marketComps[0].name;
                         firstMentioned = comp;
                         entities.push(comp, MY_BRAND);
                     }
                 } else {
                     // Not mentioned
-                    const comp = COMPETITORS[prompt.market][Math.floor(Math.random() * 3)].name;
+                    const marketComps = COMPETITORS[prompt.market];
+                    const compIndex = Math.floor(rng() * Math.min(marketComps.length, 3));
+                    const comp = marketComps[compIndex].name;
                     firstMentioned = comp;
                     entities.push(comp);
                 }
