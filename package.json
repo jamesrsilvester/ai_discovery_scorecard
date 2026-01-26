@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@openreplay/tracker": "^17.1.6",
     "clsx": "^1.2.1",
     "date-fns": "^2.30.0",
     "lucide-react": "^0.292.0",

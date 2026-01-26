@@ -17,6 +17,7 @@ export default function AppLayout({ children, showFilters = true }: AppLayoutPro
                 <div className="min-h-full font-sans text-slate-900 bg-slate-50">
                     <Head>
                         <title>AI Discovery Scorecard</title>
+                        <meta name="description" content="AI Discovery Scorecard - Monitor and optimize your brand's presence in AI-driven search results." />
                     </Head>
 
                     <Header />
